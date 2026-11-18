@@ -305,7 +305,7 @@ async function cargarFFmpeg() {
   );
 
   await ffmpeg.load({
-    workerURL,
+   classWorkerURL: workerURL,
     coreURL,
     wasmURL
   });
