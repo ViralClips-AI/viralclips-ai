@@ -1,184 +1,225 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ViralClips AI</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b0b14;
-      color: white;
-    }
-
-    header {
-      padding: 22px 8%;
-      border-bottom: 1px solid #29293b;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    header span, h1 span { color: #a78bfa; }
-
-    main {
-      max-width: 760px;
-      margin: 55px auto;
-      padding: 25px;
-      text-align: center;
-    }
-
-    h1 { font-size: 38px; }
-
-    p { color: #aaaabd; line-height: 1.6; }
-
-    .panel {
-      background: #171725;
-      border: 1px solid #343449;
-      border-radius: 18px;
-      padding: 25px;
-      margin-top: 30px;
-      text-align: left;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px;
-      background: #242438;
-      color: white;
-      border-radius: 10px;
-      border: 1px solid #44445c;
-      margin-top: 12px;
-    }
-
-    video {
-      width: 100%;
-      max-height: 420px;
-      margin-top: 20px;
-      border-radius: 12px;
-      background: black;
-      display: none;
-    }
-
-    .info {
-      background: #242438;
-      padding: 14px;
-      border-radius: 10px;
-      margin-top: 15px;
-      display: none;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 16px;
-      border: 0;
-      border-radius: 10px;
-      background: #7c3aed;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    footer {
-      text-align: center;
-      color: #777;
-      padding: 30px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViralClips AI</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b0b14;
+  color: white;
+}
+header {
+  padding: 22px 8%;
+  border-bottom: 1px solid #29293b;
+  font-size: 24px;
+  font-weight: bold;
+}
+header span, h1 span { color: #a78bfa; }
+main {
+  max-width: 760px;
+  margin: 45px auto;
+  padding: 20px;
+}
+h1 { text-align: center; font-size: 36px; }
+.intro { text-align: center; color: #aaaabd; }
+.panel {
+  background: #171725;
+  border: 1px solid #343449;
+  border-radius: 18px;
+  padding: 24px;
+  margin-top: 25px;
+}
+input[type=file] {
+  width: 100%;
+  padding: 14px;
+  background: #242438;
+  color: white;
+  border-radius: 10px;
+  margin-top: 12px;
+}
+video {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 12px;
+  background: black;
+  display: none;
+}
+.info, .selection {
+  background: #242438;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+.selection { display: none; }
+label { display: block; margin-top: 18px; }
+input[type=number] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #44445c;
+  background: #171725;
+  color: white;
+}
+button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 15px;
+  border: 0;
+  border-radius: 10px;
+  background: #7c3aed;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button.secondary { background: #343449; }
+p { color: #aaaabd; line-height: 1.5; }
+#estado { color: #c4b5fd; }
+footer { text-align: center; color: #777; padding: 30px; }
+</style>
 </head>
-
 <body>
-  <header>ViralClips <span>AI</span></header>
 
-  <main>
-    <h1>Convierte tus vídeos en <span>clips virales</span></h1>
+<header>ViralClips <span>AI</span></header>
 
-    <p>
-      Sube un vídeo y prepara tus mejores momentos
-      para TikTok y YouTube Shorts.
-    </p>
+<main>
+<h1>Crea tus <span>clips virales</span></h1>
+<p class="intro">Selecciona los mejores fragmentos de tus vídeos.</p>
 
-    <section class="panel">
-      <strong>Selecciona tu vídeo</strong>
+<section class="panel">
+<strong>1. Selecciona tu vídeo</strong>
+<input id="videoFile" type="file" accept="video/*">
 
-      <input id="videoFile" type="file" accept="video/*">
+<video id="preview" controls></video>
 
-      <video id="preview" controls></video>
+<div class="info" id="info" hidden>
+<p id="nombre"></p>
+<p id="duracion"></p>
+<p id="resolucion"></p>
+</div>
 
-      <div class="info" id="info">
-        <p id="nombre"></p>
-        <p id="duracion"></p>
-        <p id="resolucion"></p>
-      </div>
+<div class="selection" id="selection">
+<h3>2. Selecciona tu fragmento</h3>
 
-      <button onclick="analizar()">ANALIZAR VÍDEO</button>
+<label for="inicio">Segundo de inicio</label>
+<input id="inicio" type="number" min="0" value="0" step="0.1">
 
-      <p id="estado">Esperando tu vídeo...</p>
-    </section>
-  </main>
+<label for="final">Segundo de finalización</label>
+<input id="final" type="number" min="0" value="10" step="0.1">
 
-  <footer>ViralClips AI · Tu herramienta de clips</footer>
+<button onclick="previsualizar()">VER FRAGMENTO</button>
+<button class="secondary" onclick="volver()">VOLVER AL INICIO</button>
 
-  <script>
-    const selector = document.getElementById("videoFile");
-    const preview = document.getElementById("preview");
-    const info = document.getElementById("info");
-    const estado = document.getElementById("estado");
+<p id="fragmento"></p>
+</div>
 
-    let videoURL = null;
+<p id="estado">Esperando tu vídeo...</p>
+</section>
+</main>
 
-    selector.addEventListener("change", function() {
-      const archivo = this.files[0];
+<footer>ViralClips AI · Tu herramienta de clips</footer>
 
-      if (!archivo) return;
+<script>
+const selector = document.getElementById("videoFile");
+const preview = document.getElementById("preview");
+const info = document.getElementById("info");
+const selection = document.getElementById("selection");
+const estado = document.getElementById("estado");
 
-      if (videoURL) {
-        URL.revokeObjectURL(videoURL);
-      }
+let videoURL = null;
+let duracionTotal = 0;
 
-      videoURL = URL.createObjectURL(archivo);
-      preview.src = videoURL;
-      preview.style.display = "block";
-      info.style.display = "block";
+selector.addEventListener("change", function() {
+  const archivo = this.files[0];
+  if (!archivo) return;
 
-      document.getElementById("nombre").textContent =
-        "Archivo: " + archivo.name;
+  if (videoURL) URL.revokeObjectURL(videoURL);
 
-      estado.textContent = "Cargando información del vídeo...";
+  videoURL = URL.createObjectURL(archivo);
+  preview.src = videoURL;
+  preview.style.display = "block";
+  info.hidden = false;
+  selection.style.display = "block";
 
-      preview.onloadedmetadata = function() {
-        const minutos = Math.floor(preview.duration / 60);
-        const segundos = Math.floor(preview.duration % 60);
+  document.getElementById("nombre").textContent =
+    "Archivo: " + archivo.name;
 
-        document.getElementById("duracion").textContent =
-          "Duración: " + minutos + " min " + segundos + " s";
+  estado.textContent = "Leyendo vídeo...";
 
-        document.getElementById("resolucion").textContent =
-          "Resolución: " + preview.videoWidth +
-          " × " + preview.videoHeight;
+  preview.onloadedmetadata = function() {
+    duracionTotal = preview.duration;
 
-        estado.textContent = "¡Vídeo cargado correctamente!";
-      };
+    document.getElementById("duracion").textContent =
+      "Duración: " + duracionTotal.toFixed(1) + " segundos";
 
-      preview.onerror = function() {
-        estado.textContent =
-          "No se pudo leer este formato de vídeo.";
-      };
-    });
+    document.getElementById("resolucion").textContent =
+      "Resolución: " + preview.videoWidth + " × " + preview.videoHeight;
 
-    function analizar() {
-      if (!selector.files.length) {
-        estado.textContent = "Primero selecciona un vídeo.";
-        return;
-      }
+    document.getElementById("inicio").value = 0;
+    document.getElementById("final").value =
+      Math.min(10, Math.floor(duracionTotal));
 
-      estado.textContent =
-        "Vídeo preparado. El análisis automático llegará en una siguiente versión.";
+    document.getElementById("final").max = duracionTotal;
+
+    estado.textContent = "¡Vídeo cargado correctamente!";
+  };
+
+  preview.onerror = function() {
+    estado.textContent = "No se pudo leer este vídeo.";
+  };
+});
+
+function previsualizar() {
+  const inicio = Number(document.getElementById("inicio").value);
+  const final = Number(document.getElementById("final").value);
+
+  if (!duracionTotal) {
+    estado.textContent = "Primero carga un vídeo.";
+    return;
+  }
+
+  if (
+    !Number.isFinite(inicio) ||
+    !Number.isFinite(final) ||
+    inicio < 0 ||
+    final > duracionTotal ||
+    final <= inicio
+  ) {
+    estado.textContent = "Comprueba el inicio y el final del fragmento.";
+    return;
+  }
+
+  preview.currentTime = inicio;
+  preview.play();
+
+  document.getElementById("fragmento").textContent =
+    "Fragmento seleccionado: " + inicio + " s hasta " + final + " s (" +
+    (final - inicio).toFixed(1) + " segundos).";
+
+  estado.textContent =
+    "Reproduciendo la vista previa. Se detendrá en el segundo " + final + ".";
+
+  preview.ontimeupdate = function() {
+    if (preview.currentTime >= final) {
+      preview.pause();
+      preview.ontimeupdate = null;
+      estado.textContent = "Vista previa terminada.";
     }
-  </script>
+  };
+}
+
+function volver() {
+  preview.pause();
+  preview.currentTime = 0;
+  preview.ontimeupdate = null;
+  estado.textContent = "Vídeo preparado.";
+}
+</script>
 </body>
 </html>
