@@ -281,18 +281,33 @@ async function cargarFFmpeg() {
 
   if (ffmpegCargado) return;
 
-  estado.textContent = "Descargando el procesador de vídeo...";
+  estado.textContent = "Preparando el procesador de vídeo...";
+
+  const paquete =
+    "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm";
 
   const base =
     "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd";
 
+  const workerURL = await toBlobURL(
+    paquete + "/worker.js",
+    "text/javascript"
+  );
+
+  const coreURL = await toBlobURL(
+    base + "/ffmpeg-core.js",
+    "text/javascript"
+  );
+
+  const wasmURL = await toBlobURL(
+    base + "/ffmpeg-core.wasm",
+    "application/wasm"
+  );
+
   await ffmpeg.load({
-    coreURL: await toBlobURL(
-      base + "/ffmpeg-core.js", "text/javascript"
-    ),
-    wasmURL: await toBlobURL(
-      base + "/ffmpeg-core.wasm", "application/wasm"
-    )
+    workerURL,
+    coreURL,
+    wasmURL
   });
 
   ffmpegCargado = true;
