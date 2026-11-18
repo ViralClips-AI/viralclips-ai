@@ -47,6 +47,7 @@ footer { text-align: center; color: #777; padding: 30px; }
 <button onclick="previsualizar()">VER FRAGMENTO</button>
 <button class="secondary" onclick="volver()">VOLVER AL INICIO</button>
 <button onclick="exportarMP4()">EXPORTAR CLIP MP4</button>
+<button onclick="detectarMomentos()">DETECTAR MOMENTOS AUTOMÁTICAMENTE</button>
 <p id="fragmento"></p>
 </div>
 <p id="estado">Esperando tu vídeo...</p>
@@ -181,7 +182,70 @@ async function exportarMP4() {
     estado.textContent = "Error al exportar: " + error.message;
   }
 }
+async function detectarMomentos() {
+  if (!preview.src || !duracionTotal) {
+    estado.textContent = "Primero sube un vídeo.";
+    return;
+  }
 
+  estado.textContent = "Analizando el volumen del vídeo...";
+
+  try {
+    const contexto = new AudioContext();
+    const respuesta = await fetch(preview.src);
+    const datos = await respuesta.arrayBuffer();
+    const audio = await contexto.decodeAudioData(datos);
+
+    const canal = audio.getChannelData(0);
+    const frecuencia = audio.sampleRate;
+    const bloques = [];
+    const tamaño = Math.floor(frecuencia * 2);
+
+    for (let i = 0; i < canal.length; i += tamaño) {
+      let suma = 0;
+      const limite = Math.min(i + tamaño, canal.length);
+
+      for (let j = i; j < limite; j++) {
+        suma += canal[j] * canal[j];
+      }
+
+      bloques.push({
+        segundo: i / frecuencia,
+        volumen: Math.sqrt(suma / (limite - i))
+      });
+    }
+
+    const maximo = Math.max(...bloques.map(b => b.volumen));
+
+    if (maximo === 0) {
+      estado.textContent = "No se ha detectado audio.";
+      await contexto.close();
+      return;
+    }
+
+    const mejores = bloques
+      .filter(b => b.volumen > maximo * 0.65)
+      .sort((a, b) => b.volumen - a.volumen)
+      .slice(0, 5)
+      .sort((a, b) => a.segundo - b.segundo);
+
+    if (mejores.length === 0) {
+      estado.textContent = "No se encontraron momentos destacados.";
+      await contexto.close();
+      return;
+    }
+
+document.getElementById("inicio").value = Math.max(0, Math.floor(mejores[0].segundo));
+document.getElementById("final").value = Math.min(duracionTotal, Math.floor(mejores[0].segundo) + 15);
+
+    estado.textContent = "¡Momento destacado encontrado! Revisa el fragmento.";
+
+    await contexto.close();
+
+  } catch (error) {
+    estado.textContent = "No se pudo analizar el audio: " + error.message;
+  }
+}
 </script>
 </body>
 </html>
