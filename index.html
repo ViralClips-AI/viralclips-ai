@@ -47,6 +47,13 @@ footer { text-align: center; color: #777; padding: 30px; }
 <button onclick="previsualizar()">VER FRAGMENTO</button>
 <button class="secondary" onclick="volver()">VOLVER AL INICIO</button>
 <button onclick="exportarMP4()">EXPORTAR CLIP MP4</button>
+<label for="duracionClip">Duración del clip</label>
+<select id="duracionClip">
+  <option value="15">15 segundos</option>
+  <option value="30" selected>30 segundos (recomendado)</option>
+  <option value="45">45 segundos</option>
+  <option value="60">60 segundos</option>
+</select>
 <button onclick="detectarMomentos()">DETECTAR MOMENTOS AUTOMÁTICAMENTE</button>
 <p id="fragmento"></p>
 </div>
@@ -236,7 +243,8 @@ async function detectarMomentos() {
     }
 
 document.getElementById("inicio").value = Math.max(0, Math.floor(mejores[0].segundo));
-document.getElementById("final").value = Math.min(duracionTotal, Math.floor(mejores[0].segundo) + 15);
+const duracionClip = Number(document.getElementById("duracionClip").value);
+document.getElementById("final").value = Math.min(duracionTotal, Math.floor(mejores[0].segundo) + duracionClip);
 
     estado.textContent = "¡Momento destacado encontrado! Revisa el fragmento.";
 
