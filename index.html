@@ -46,6 +46,7 @@ footer { text-align: center; color: #777; padding: 30px; }
 <input id="final" type="number" min="0" value="10" step="0.1">
 <button onclick="previsualizar()">VER FRAGMENTO</button>
 <button class="secondary" onclick="volver()">VOLVER AL INICIO</button>
+<button onclick="exportarMP4()">EXPORTAR CLIP MP4</button>
 <p id="fragmento"></p>
 </div>
 <p id="estado">Esperando tu vídeo...</p>
@@ -110,6 +111,77 @@ function volver() {
   preview.ontimeupdate = null;
   estado.textContent = "Vídeo preparado.";
 }
+
+async function exportarMP4() {
+  const inicio = Number(document.getElementById("inicio").value);
+  const final = Number(document.getElementById("final").value);
+
+  if (!duracionTotal || final <= inicio || inicio < 0 || final > duracionTotal) {
+    estado.textContent = "Comprueba los segundos del fragmento.";
+    return;
+  }
+
+  if (!preview.captureStream || !window.MediaRecorder) {
+    estado.textContent = "Tu navegador no admite esta exportación.";
+    return;
+  }
+
+  const tipo = "video/mp4;codecs=avc1.42E01E,mp4a.40.2";
+
+  if (!MediaRecorder.isTypeSupported(tipo)) {
+    estado.textContent = "Chrome no admite grabar MP4 con este códec.";
+    return;
+  }
+
+  try {
+    estado.textContent = "Preparando exportación MP4...";
+
+    preview.pause();
+    preview.currentTime = inicio;
+
+    await new Promise(resolve => {
+      preview.addEventListener("seeked", resolve, { once: true });
+    });
+
+    const stream = preview.captureStream();
+    const partes = [];
+    const grabador = new MediaRecorder(stream, { mimeType: tipo });
+
+    grabador.ondataavailable = evento => {
+      if (evento.data.size > 0) partes.push(evento.data);
+    };
+
+    grabador.onstop = () => {
+      const archivo = new Blob(partes, { type: "video/mp4" });
+      const url = URL.createObjectURL(archivo);
+      const enlace = document.createElement("a");
+
+      enlace.href = url;
+      enlace.download = "ViralClips-clip.mp4";
+      enlace.click();
+
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      stream.getTracks().forEach(pista => pista.stop());
+      estado.textContent = "¡Exportación terminada!";
+    };
+
+    preview.ontimeupdate = () => {
+      if (preview.currentTime >= final) {
+        preview.pause();
+        preview.ontimeupdate = null;
+        grabador.stop();
+      }
+    };
+
+    grabador.start();
+    await preview.play();
+
+    estado.textContent = "Exportando tu clip MP4...";
+  } catch (error) {
+    estado.textContent = "Error al exportar: " + error.message;
+  }
+}
+
 </script>
 </body>
 </html>
