@@ -12,7 +12,6 @@
       font-family: Arial, sans-serif;
       background: #0b0b14;
       color: white;
-      min-height: 100vh;
     }
     header {
       padding: 22px 8%;
@@ -20,32 +19,46 @@
       font-size: 24px;
       font-weight: bold;
     }
-    header span { color: #a78bfa; }
+    header span, h1 span { color: #a78bfa; }
     main {
       max-width: 760px;
-      margin: 75px auto;
+      margin: 55px auto;
       padding: 25px;
       text-align: center;
     }
-    h1 { font-size: 42px; }
-    h1 span { color: #a78bfa; }
+    h1 { font-size: 38px; }
     p { color: #aaaabd; line-height: 1.6; }
     .panel {
       background: #171725;
       border: 1px solid #343449;
       border-radius: 18px;
-      padding: 28px;
-      margin-top: 35px;
+      padding: 25px;
+      margin-top: 30px;
       text-align: left;
     }
-    label { display: block; margin-bottom: 12px; }
-    input[type=file] {
+    input {
       width: 100%;
-      padding: 15px;
+      padding: 14px;
       background: #242438;
       color: white;
       border-radius: 10px;
       border: 1px solid #44445c;
+      margin-top: 12px;
+    }
+    video {
+      width: 100%;
+      max-height: 420px;
+      margin-top: 20px;
+      border-radius: 12px;
+      background: black;
+      display: none;
+    }
+    .info {
+      background: #242438;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 15px;
+      display: none;
     }
     button {
       width: 100%;
@@ -59,9 +72,11 @@
       font-weight: bold;
       cursor: pointer;
     }
-    button:hover { background: #6d28d9; }
-    #estado { margin-top: 20px; }
-    footer { text-align: center; color: #777; padding: 30px; }
+    footer {
+      text-align: center;
+      color: #777;
+      padding: 30px;
+    }
   </style>
 </head>
 <body>
@@ -72,8 +87,17 @@
     <p>Sube un vídeo y prepara tus mejores momentos para TikTok y YouTube Shorts.</p>
 
     <section class="panel">
-      <label for="video"><strong>Selecciona tu vídeo</strong></label>
-      <input id="video" type="file" accept="video/*">
+      <strong>Selecciona tu vídeo</strong>
+      <input id="videoFile" type="file" accept="video/*">
+
+      <video id="preview" controls></video>
+
+      <div class="info" id="info">
+        <p id="nombre"></p>
+        <p id="duracion"></p>
+        <p id="resolucion"></p>
+      </div>
+
       <button onclick="analizar()">ANALIZAR VÍDEO</button>
       <p id="estado">Esperando tu vídeo...</p>
     </section>
@@ -82,18 +106,56 @@
   <footer>ViralClips AI · Tu herramienta de clips</footer>
 
   <script>
-    function analizar() {
-      const archivo = document.getElementById("video").files[0];
-      const estado = document.getElementById("estado");
+    const selector = document.getElementById("videoFile");
+    const preview = document.getElementById("preview");
+    const info = document.getElementById("info");
+    const estado = document.getElementById("estado");
 
-      if (!archivo) {
+    let videoURL = null;
+
+    selector.addEventListener("change", function() {
+      const archivo = this.files[0];
+
+      if (!archivo) return;
+
+      if (videoURL) URL.revokeObjectURL(videoURL);
+
+      videoURL = URL.createObjectURL(archivo);
+      preview.src = videoURL;
+      preview.style.display = "block";
+      info.style.display = "block";
+
+      document.getElementById("nombre").textContent =
+        "Archivo: " + archivo.name;
+
+      estado.textContent = "Cargando información del vídeo...";
+
+      preview.onloadedmetadata = function() {
+        const minutos = Math.floor(preview.duration / 60);
+        const segundos = Math.floor(preview.duration % 60);
+
+        document.getElementById("duracion").textContent =
+          "Duración: " + minutos + " min " + segundos + " s";
+
+        document.getElementById("resolucion").textContent =
+          "Resolución: " + preview.videoWidth + " × " + preview.videoHeight;
+
+        estado.textContent = "¡Vídeo cargado correctamente!";
+      };
+
+      preview.onerror = function() {
+        estado.textContent = "No se pudo leer este formato de vídeo.";
+      };
+    });
+
+    function analizar() {
+      if (!selector.files.length) {
         estado.textContent = "Primero selecciona un vídeo.";
         return;
       }
 
       estado.textContent =
-        "Vídeo seleccionado: " + archivo.name +
-        ". La siguiente versión incorporará el análisis automático.";
+        "Vídeo preparado. El análisis automático llegará en una siguiente versión.";
     }
   </script>
 </body>
