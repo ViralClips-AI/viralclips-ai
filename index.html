@@ -1,32 +1,40 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ViralClips AI</title>
+
 <style>
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #0b0b14;
   color: white;
 }
+
 header {
   padding: 22px 8%;
   border-bottom: 1px solid #29293b;
   font-size: 24px;
   font-weight: bold;
 }
+
 header span, h1 span { color: #a78bfa; }
+
 main {
   max-width: 760px;
-  margin: 45px auto;
+  margin: 40px auto;
   padding: 20px;
 }
-h1 { text-align: center; font-size: 36px; }
-.intro { text-align: center; color: #aaaabd; }
+
+h1, .intro { text-align: center; }
+h1 { font-size: 36px; }
+
+p { color: #aaaabd; line-height: 1.5; }
+
 .panel {
   background: #171725;
   border: 1px solid #343449;
@@ -34,38 +42,40 @@ h1 { text-align: center; font-size: 36px; }
   padding: 24px;
   margin-top: 25px;
 }
-input[type=file] {
+
+input[type=file], input[type=number] {
   width: 100%;
-  padding: 14px;
+  padding: 13px;
+  margin-top: 10px;
   background: #242438;
   color: white;
-  border-radius: 10px;
-  margin-top: 12px;
+  border: 1px solid #44445c;
+  border-radius: 9px;
 }
+
 video {
   width: 100%;
+  max-height: 420px;
   margin-top: 20px;
   border-radius: 12px;
   background: black;
   display: none;
 }
-.info, .selection {
+
+.info, .selection, .export {
   background: #242438;
   padding: 15px;
   border-radius: 10px;
-  margin-top: 15px;
+  margin-top: 18px;
 }
-.selection { display: none; }
-label { display: block; margin-top: 18px; }
-input[type=number] {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: 1px solid #44445c;
-  background: #171725;
-  color: white;
+
+.selection, .export { display: none; }
+
+label {
+  display: block;
+  margin-top: 16px;
 }
+
 button {
   width: 100%;
   margin-top: 18px;
@@ -74,76 +84,143 @@ button {
   border-radius: 10px;
   background: #7c3aed;
   color: white;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   cursor: pointer;
 }
-button.secondary { background: #343449; }
-p { color: #aaaabd; line-height: 1.5; }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.secondary { background: #343449; }
+
+progress {
+  width: 100%;
+  height: 18px;
+  margin-top: 15px;
+  accent-color: #a78bfa;
+}
+
 #estado { color: #c4b5fd; }
-footer { text-align: center; color: #777; padding: 30px; }
+
+.download {
+  display: none;
+  text-align: center;
+  padding: 15px;
+  margin-top: 18px;
+  background: #166534;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  color: #777;
+  padding: 30px;
+}
 </style>
 </head>
+
 <body>
 
 <header>ViralClips <span>AI</span></header>
 
 <main>
+
 <h1>Crea tus <span>clips virales</span></h1>
-<p class="intro">Selecciona los mejores fragmentos de tus vídeos.</p>
+<p class="intro">
+  Recorta tus vídeos y conviértelos en clips verticales.
+</p>
 
 <section class="panel">
+
 <strong>1. Selecciona tu vídeo</strong>
 <input id="videoFile" type="file" accept="video/*">
 
 <video id="preview" controls></video>
 
 <div class="info" id="info" hidden>
-<p id="nombre"></p>
-<p id="duracion"></p>
-<p id="resolucion"></p>
+  <p id="nombre"></p>
+  <p id="duracion"></p>
+  <p id="resolucion"></p>
 </div>
 
 <div class="selection" id="selection">
+
 <h3>2. Selecciona tu fragmento</h3>
 
 <label for="inicio">Segundo de inicio</label>
 <input id="inicio" type="number" min="0" value="0" step="0.1">
 
 <label for="final">Segundo de finalización</label>
-<input id="final" type="number" min="0" value="10" step="0.1">
+<input id="final" type="number" min="0" value="5" step="0.1">
 
-<button onclick="previsualizar()">VER FRAGMENTO</button>
-<button class="secondary" onclick="volver()">VOLVER AL INICIO</button>
+<p>Formato de salida: 1080 × 1920 (9:16)</p>
 
-<p id="fragmento"></p>
+<button id="previewButton">VER FRAGMENTO</button>
+<button id="exportButton">EXPORTAR CLIP MP4</button>
+
 </div>
 
+<div class="export" id="export">
+  <strong>Procesamiento del vídeo</strong>
+  <progress id="progress" value="0" max="100"></progress>
+  <p id="progressText">Preparando...</p>
+</div>
+
+<a id="download" class="download" download="viralclips.mp4">
+  DESCARGAR MI CLIP MP4
+</a>
+
 <p id="estado">Esperando tu vídeo...</p>
+
 </section>
 </main>
 
 <footer>ViralClips AI · Tu herramienta de clips</footer>
 
-<script>
+<script type="module">
+
+import { FFmpeg } from
+"https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js";
+
+import { toBlobURL } from
+"https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.2/dist/esm/index.js";
+
 const selector = document.getElementById("videoFile");
 const preview = document.getElementById("preview");
 const info = document.getElementById("info");
 const selection = document.getElementById("selection");
 const estado = document.getElementById("estado");
 
+const ffmpeg = new FFmpeg();
+
 let videoURL = null;
 let duracionTotal = 0;
+let archivoActual = null;
+let ffmpegCargado = false;
+let salidaURL = null;
 
 selector.addEventListener("change", function() {
+
   const archivo = this.files[0];
   if (!archivo) return;
 
+  archivoActual = archivo;
+
   if (videoURL) URL.revokeObjectURL(videoURL);
+  if (salidaURL) URL.revokeObjectURL(salidaURL);
+
+  document.getElementById("download").style.display = "none";
 
   videoURL = URL.createObjectURL(archivo);
   preview.src = videoURL;
   preview.style.display = "block";
+
   info.hidden = false;
   selection.style.display = "block";
 
@@ -153,57 +230,43 @@ selector.addEventListener("change", function() {
   estado.textContent = "Leyendo vídeo...";
 
   preview.onloadedmetadata = function() {
+
     duracionTotal = preview.duration;
 
     document.getElementById("duracion").textContent =
       "Duración: " + duracionTotal.toFixed(1) + " segundos";
 
     document.getElementById("resolucion").textContent =
-      "Resolución: " + preview.videoWidth + " × " + preview.videoHeight;
+      "Resolución: " + preview.videoWidth +
+      " × " + preview.videoHeight;
 
     document.getElementById("inicio").value = 0;
+
     document.getElementById("final").value =
-      Math.min(10, Math.floor(duracionTotal));
+      Math.min(5, Math.floor(duracionTotal));
 
     document.getElementById("final").max = duracionTotal;
 
     estado.textContent = "¡Vídeo cargado correctamente!";
   };
 
-  preview.onerror = function() {
-    estado.textContent = "No se pudo leer este vídeo.";
-  };
 });
 
-function previsualizar() {
+document.getElementById("previewButton").onclick = function() {
+
   const inicio = Number(document.getElementById("inicio").value);
   const final = Number(document.getElementById("final").value);
 
-  if (!duracionTotal) {
-    estado.textContent = "Primero carga un vídeo.";
-    return;
-  }
-
-  if (
-    !Number.isFinite(inicio) ||
-    !Number.isFinite(final) ||
-    inicio < 0 ||
-    final > duracionTotal ||
-    final <= inicio
-  ) {
-    estado.textContent = "Comprueba el inicio y el final del fragmento.";
+  if (!duracionTotal || inicio < 0 ||
+      final <= inicio || final > duracionTotal) {
+    estado.textContent = "Comprueba los segundos seleccionados.";
     return;
   }
 
   preview.currentTime = inicio;
   preview.play();
 
-  document.getElementById("fragmento").textContent =
-    "Fragmento seleccionado: " + inicio + " s hasta " + final + " s (" +
-    (final - inicio).toFixed(1) + " segundos).";
-
-  estado.textContent =
-    "Reproduciendo la vista previa. Se detendrá en el segundo " + final + ".";
+  estado.textContent = "Reproduciendo fragmento...";
 
   preview.ontimeupdate = function() {
     if (preview.currentTime >= final) {
@@ -212,14 +275,155 @@ function previsualizar() {
       estado.textContent = "Vista previa terminada.";
     }
   };
+};
+
+async function cargarFFmpeg() {
+
+  if (ffmpegCargado) return;
+
+  estado.textContent = "Descargando el procesador de vídeo...";
+
+  const base =
+    "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd";
+
+  await ffmpeg.load({
+    coreURL: await toBlobURL(
+      base + "/ffmpeg-core.js", "text/javascript"
+    ),
+    wasmURL: await toBlobURL(
+      base + "/ffmpeg-core.wasm", "application/wasm"
+    )
+  });
+
+  ffmpegCargado = true;
 }
 
-function volver() {
-  preview.pause();
-  preview.currentTime = 0;
-  preview.ontimeupdate = null;
-  estado.textContent = "Vídeo preparado.";
-}
+document.getElementById("exportButton").onclick =
+async function() {
+
+  const boton = this;
+  const inicio = Number(document.getElementById("inicio").value);
+  const final = Number(document.getElementById("final").value);
+
+  if (!archivoActual || !duracionTotal) {
+    estado.textContent = "Primero selecciona un vídeo.";
+    return;
+  }
+
+  if (
+    !Number.isFinite(inicio) ||
+    !Number.isFinite(final) ||
+    inicio < 0 ||
+    final <= inicio ||
+    final > duracionTotal
+  ) {
+    estado.textContent = "Comprueba el inicio y el final.";
+    return;
+  }
+
+  if (final - inicio > 30) {
+    estado.textContent =
+      "Para esta primera prueba selecciona un máximo de 30 segundos.";
+    return;
+  }
+
+  if (archivoActual.size > 100 * 1024 * 1024) {
+    estado.textContent =
+      "Para esta primera prueba utiliza un vídeo de menos de 100 MB.";
+    return;
+  }
+
+  boton.disabled = true;
+
+  const exportBox = document.getElementById("export");
+  const barra = document.getElementById("progress");
+  const texto = document.getElementById("progressText");
+
+  exportBox.style.display = "block";
+  barra.value = 0;
+
+  try {
+
+    await cargarFFmpeg();
+
+    estado.textContent = "Preparando tu clip...";
+
+    ffmpeg.on("progress", ({ progress }) => {
+      const porcentaje = Math.max(
+        0, Math.min(100, Math.round(progress * 100))
+      );
+
+      barra.value = porcentaje;
+      texto.textContent = porcentaje + "% completado";
+    });
+
+    await ffmpeg.writeFile(
+      "entrada." + (archivoActual.name.split(".").pop() || "mp4"),
+      new Uint8Array(await archivoActual.arrayBuffer())
+    );
+
+    const extension =
+      archivoActual.name.split(".").pop() || "mp4";
+
+    const entrada = "entrada." + extension;
+
+    estado.textContent = "Convirtiendo a formato vertical...";
+
+    await ffmpeg.exec([
+      "-ss", String(inicio),
+      "-i", entrada,
+      "-t", String(final - inicio),
+      "-vf",
+      "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920",
+      "-c:v", "libx264",
+      "-preset", "ultrafast",
+      "-crf", "28",
+      "-c:a", "aac",
+      "-b:a", "128k",
+      "-pix_fmt", "yuv420p",
+      "-movflags", "+faststart",
+      "-threads", "1",
+      "viralclips.mp4"
+    ]);
+
+    const resultado = await ffmpeg.readFile("viralclips.mp4");
+
+    const blob = new Blob(
+      [resultado],
+      { type: "video/mp4" }
+    );
+
+    if (salidaURL) URL.revokeObjectURL(salidaURL);
+
+    salidaURL = URL.createObjectURL(blob);
+
+    const enlace = document.getElementById("download");
+    enlace.href = salidaURL;
+    enlace.style.display = "block";
+
+    barra.value = 100;
+    texto.textContent = "¡Exportación completada!";
+
+    estado.textContent =
+      "¡Tu clip MP4 está listo para descargar!";
+
+  } catch (error) {
+
+    console.error(error);
+
+    estado.textContent =
+      "No se pudo exportar. Prueba con un vídeo más pequeño o revisa tu conexión.";
+
+    texto.textContent = "Error en la exportación.";
+
+  } finally {
+
+    boton.disabled = false;
+
+  }
+};
+
 </script>
+
 </body>
 </html>
