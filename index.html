@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,27 +6,34 @@
   <title>ViralClips AI</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #0b0b14;
       color: white;
     }
+
     header {
       padding: 22px 8%;
       border-bottom: 1px solid #29293b;
       font-size: 24px;
       font-weight: bold;
     }
+
     header span, h1 span { color: #a78bfa; }
+
     main {
       max-width: 760px;
       margin: 55px auto;
       padding: 25px;
       text-align: center;
     }
+
     h1 { font-size: 38px; }
+
     p { color: #aaaabd; line-height: 1.6; }
+
     .panel {
       background: #171725;
       border: 1px solid #343449;
@@ -36,6 +42,7 @@
       margin-top: 30px;
       text-align: left;
     }
+
     input {
       width: 100%;
       padding: 14px;
@@ -45,6 +52,7 @@
       border: 1px solid #44445c;
       margin-top: 12px;
     }
+
     video {
       width: 100%;
       max-height: 420px;
@@ -53,6 +61,7 @@
       background: black;
       display: none;
     }
+
     .info {
       background: #242438;
       padding: 14px;
@@ -60,6 +69,7 @@
       margin-top: 15px;
       display: none;
     }
+
     button {
       width: 100%;
       margin-top: 20px;
@@ -72,6 +82,7 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     footer {
       text-align: center;
       color: #777;
@@ -79,15 +90,21 @@
     }
   </style>
 </head>
+
 <body>
   <header>ViralClips <span>AI</span></header>
 
   <main>
     <h1>Convierte tus vídeos en <span>clips virales</span></h1>
-    <p>Sube un vídeo y prepara tus mejores momentos para TikTok y YouTube Shorts.</p>
+
+    <p>
+      Sube un vídeo y prepara tus mejores momentos
+      para TikTok y YouTube Shorts.
+    </p>
 
     <section class="panel">
       <strong>Selecciona tu vídeo</strong>
+
       <input id="videoFile" type="file" accept="video/*">
 
       <video id="preview" controls></video>
@@ -99,6 +116,7 @@
       </div>
 
       <button onclick="analizar()">ANALIZAR VÍDEO</button>
+
       <p id="estado">Esperando tu vídeo...</p>
     </section>
   </main>
@@ -118,7 +136,9 @@
 
       if (!archivo) return;
 
-      if (videoURL) URL.revokeObjectURL(videoURL);
+      if (videoURL) {
+        URL.revokeObjectURL(videoURL);
+      }
 
       videoURL = URL.createObjectURL(archivo);
       preview.src = videoURL;
@@ -138,13 +158,15 @@
           "Duración: " + minutos + " min " + segundos + " s";
 
         document.getElementById("resolucion").textContent =
-          "Resolución: " + preview.videoWidth + " × " + preview.videoHeight;
+          "Resolución: " + preview.videoWidth +
+          " × " + preview.videoHeight;
 
         estado.textContent = "¡Vídeo cargado correctamente!";
       };
 
       preview.onerror = function() {
-        estado.textContent = "No se pudo leer este formato de vídeo.";
+        estado.textContent =
+          "No se pudo leer este formato de vídeo.";
       };
     });
 
