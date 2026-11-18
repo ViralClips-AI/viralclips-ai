@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ViralClips AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b14;
+      color: white;
+      min-height: 100vh;
+    }
+    header {
+      padding: 22px 8%;
+      border-bottom: 1px solid #29293b;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    header span { color: #a78bfa; }
+    main {
+      max-width: 760px;
+      margin: 75px auto;
+      padding: 25px;
+      text-align: center;
+    }
+    h1 { font-size: 42px; }
+    h1 span { color: #a78bfa; }
+    p { color: #aaaabd; line-height: 1.6; }
+    .panel {
+      background: #171725;
+      border: 1px solid #343449;
+      border-radius: 18px;
+      padding: 28px;
+      margin-top: 35px;
+      text-align: left;
+    }
+    label { display: block; margin-bottom: 12px; }
+    input[type=file] {
+      width: 100%;
+      padding: 15px;
+      background: #242438;
+      color: white;
+      border-radius: 10px;
+      border: 1px solid #44445c;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #7c3aed;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #6d28d9; }
+    #estado { margin-top: 20px; }
+    footer { text-align: center; color: #777; padding: 30px; }
+  </style>
+</head>
+<body>
+  <header>ViralClips <span>AI</span></header>
+
+  <main>
+    <h1>Convierte tus vídeos en <span>clips virales</span></h1>
+    <p>Sube un vídeo y prepara tus mejores momentos para TikTok y YouTube Shorts.</p>
+
+    <section class="panel">
+      <label for="video"><strong>Selecciona tu vídeo</strong></label>
+      <input id="video" type="file" accept="video/*">
+      <button onclick="analizar()">ANALIZAR VÍDEO</button>
+      <p id="estado">Esperando tu vídeo...</p>
+    </section>
+  </main>
+
+  <footer>ViralClips AI · Tu herramienta de clips</footer>
+
+  <script>
+    function analizar() {
+      const archivo = document.getElementById("video").files[0];
+      const estado = document.getElementById("estado");
+
+      if (!archivo) {
+        estado.textContent = "Primero selecciona un vídeo.";
+        return;
+      }
+
+      estado.textContent =
+        "Vídeo seleccionado: " + archivo.name +
+        ". La siguiente versión incorporará el análisis automático.";
+    }
+  </script>
+</body>
+</html>
