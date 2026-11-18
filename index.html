@@ -277,53 +277,26 @@ document.getElementById("previewButton").onclick = function() {
   };
 };
 
-async function cargarFFmpeg() {
+ const base = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd";
 
-  if (ffmpegCargado) return;
+  const workerCode = `
+    self.onmessage = function(e) {
+      self.postMessage({type: "ERROR", data: "Worker no disponible"});
+    };
+  `;
 
-  estado.textContent = "Preparando el procesador de vídeo...";
-
-  const paquete =
-    "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm";
-
-  const base =
-    "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd";
-
-  const workerURL = await toBlobURL(
-    paquete + "/worker.js",
-    "text/javascript"
-  );
-
-  const coreURL = await toBlobURL(
-    base + "/ffmpeg-core.js",
-    "text/javascript"
-  );
-
-  const wasmURL = await toBlobURL(
-    base + "/ffmpeg-core.wasm",
-    "application/wasm"
+  const workerURL = URL.createObjectURL(
+    new Blob([workerCode], {type: "text/javascript"})
   );
 
   await ffmpeg.load({
-   classWorkerURL: workerURL,
-    coreURL,
-    wasmURL
+    classWorkerURL: workerURL,
+    coreURL: await toBlobURL(base + "/ffmpeg-core.js", "text/javascript"),
+    wasmURL: await toBlobURL(base + "/ffmpeg-core.wasm", "application/wasm")
   });
 
   ffmpegCargado = true;
 }
-
-document.getElementById("exportButton").onclick =
-async function() {
-
-  const boton = this;
-  const inicio = Number(document.getElementById("inicio").value);
-  const final = Number(document.getElementById("final").value);
-
-  if (!archivoActual || !duracionTotal) {
-    estado.textContent = "Primero selecciona un vídeo.";
-    return;
-  }
 
   if (
     !Number.isFinite(inicio) ||
