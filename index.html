@@ -56,6 +56,8 @@ footer { text-align: center; color: #777; padding: 30px; }
 </select>
 <button onclick="detectarTresMomentos()">DETECTAR MOMENTOS AUTOMÁTICAMENTE</button>
 <div id="resultadosMomentos"></div>
+<button onclick="generarSubtitulos()">GENERAR SUBTÍTULOS AUTOMÁTICOS</button>
+<div id="resultadoSubtitulos"></div>
 <p id="fragmento"></p>
 </div>
 <p id="estado">Esperando tu vídeo...</p>
@@ -338,6 +340,134 @@ async function detectarTresMomentos() {
 
   } catch (error) {
     estado.textContent = "No se pudo analizar el audio: " + error.message;
+  } finally {
+    if (contexto && contexto.state !== "closed") {
+      await contexto.close();
+    }
+  }
+}  
+let modeloSubtitulos = null;
+
+async function generarSubtitulos() {
+  const archivo = selector.files[0];
+
+  if (!archivo) {
+    estado.textContent = "Primero sube un vídeo.";
+    return;
+  }
+
+  let contexto;
+
+  try {
+    estado.textContent = "Preparando el audio...";
+
+    contexto = new AudioContext();
+    const datos = await archivo.arrayBuffer();
+    const audio = await contexto.decodeAudioData(datos);
+
+    const mono = new Float32Array(audio.length);
+    const canales = audio.numberOfChannels;
+
+    for (let c = 0; c < canales; c++) {
+      const canal = audio.getChannelData(c);
+      for (let i = 0; i < audio.length; i++) {
+        mono[i] += canal[i] / canales;
+      }
+    }
+
+    const frecuencia = 16000;
+    const paso = audio.sampleRate / frecuencia;
+    const muestras = new Float32Array(
+      Math.floor(mono.length / paso)
+    );
+
+    for (let i = 0; i < muestras.length; i++) {
+      muestras[i] = mono[Math.floor(i * paso)];
+    }
+
+    estado.textContent = "Cargando el modelo gratuito de voz...";
+
+    const { pipeline, env } = await import(
+      "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"
+    );
+
+    env.allowLocalModels = false;
+
+    if (!modeloSubtitulos) {
+      modeloSubtitulos = await pipeline(
+        "automatic-speech-recognition",
+        "Xenova/whisper-tiny"
+      );
+    }
+
+    estado.textContent = "Generando subtítulos...";
+
+    const resultado = await modeloSubtitulos(muestras, {
+      sampling_rate: 16000,
+      return_timestamps: true,
+      chunk_length_s: 30,
+      stride_length_s: 5,
+      language: "spanish",
+      task: "transcribe"
+    });
+
+    const fragmentos = resultado.chunks || [];
+
+    if (!fragmentos.length) {
+      throw new Error("No se pudieron obtener los tiempos de los subtítulos.");
+    }
+
+    function tiempoVTT(segundos) {
+      const ms = Math.floor((segundos % 1) * 1000);
+      const total = Math.floor(segundos);
+      const s = total % 60;
+      const m = Math.floor(total / 60) % 60;
+      const h = Math.floor(total / 3600);
+
+      return String(h).padStart(2, "0") + ":" +
+        String(m).padStart(2, "0") + ":" +
+        String(s).padStart(2, "0") + "." +
+        String(ms).padStart(3, "0");
+    }
+
+    let vtt = "WEBVTT\n\n";
+
+    fragmentos.forEach((f, i) => {
+      if (!f.timestamp || f.timestamp[1] === null) return;
+
+      vtt += (i + 1) + "\n";
+      vtt += tiempoVTT(f.timestamp[0]) + " --> " +
+        tiempoVTT(f.timestamp[1]) + "\n";
+      vtt += f.text.trim() + "\n\n";
+    });
+
+    const blob = new Blob([vtt], { type: "text/vtt" });
+    const url = URL.createObjectURL(blob);
+
+    preview.querySelectorAll("track[data-auto-subtitles]")
+      .forEach(t => t.remove());
+
+    const pista = document.createElement("track");
+    pista.kind = "subtitles";
+    pista.label = "Subtítulos automáticos";
+    pista.srclang = "es";
+    pista.default = true;
+    pista.src = url;
+    pista.dataset.autoSubtitles = "true";
+    preview.appendChild(pista);
+
+    pista.track.mode = "showing";
+
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "subtitulos.vtt";
+    enlace.textContent = "DESCARGAR SUBTÍTULOS";
+    document.getElementById("resultadoSubtitulos").replaceChildren(enlace);
+
+    estado.textContent = "¡Subtítulos generados correctamente!";
+
+  } catch (error) {
+    estado.textContent = "Error al generar subtítulos: " + error.message;
   } finally {
     if (contexto && contexto.state !== "closed") {
       await contexto.close();
