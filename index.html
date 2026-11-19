@@ -254,24 +254,49 @@ async function getFFmpeg() {
     const base =
       'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
 
-    // Carga el Worker como Blob para evitar crear un Worker directamente
-    // desde un dominio externo en GitHub Pages.
-    const classWorkerURL = await toBlobURL(
-      'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/worker.js',
-      'text/javascript'
+    // El Worker principal debe ser del mismo origen (blob:). Al convertir
+    // worker.js a Blob, sus importaciones relativas dejan de resolver; por eso
+    // se reescriben a URLs absolutas del mismo paquete antes de crear el Blob.
+    const workerBase =
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm';
+    setStatus('Descargando el motor de vídeo…', 8);
+
+    const workerResponse = await fetch(workerBase + '/worker.js', {
+      mode: 'cors',
+      cache: 'force-cache'
+    });
+    if (!workerResponse.ok) {
+      throw new Error('No se pudo descargar el Worker de FFmpeg (HTTP ' + workerResponse.status + ').');
+    }
+
+    let workerCode = await workerResponse.text();
+    workerCode = workerCode.replace(
+      /([\"'])\.\/(const|errors)\.js\1/g,
+      (match, quote, file) => quote + workerBase + '/' + file + '.js' + quote
     );
 
-    await instance.load({
-      classWorkerURL,
-      coreURL: await toBlobURL(
-        base + '/ffmpeg-core.js',
-        'text/javascript'
-      ),
-      wasmURL: await toBlobURL(
-        base + '/ffmpeg-core.wasm',
-        'application/wasm'
-      )
-    });
+    const workerBlobURL = URL.createObjectURL(
+      new Blob([workerCode], { type: 'text/javascript' })
+    );
+
+    setStatus('Inicializando el motor de vídeo…', 12);
+
+    try {
+      await instance.load({
+        classWorkerURL: workerBlobURL,
+        coreURL: await toBlobURL(
+          base + '/ffmpeg-core.js',
+          'text/javascript'
+        ),
+        wasmURL: await toBlobURL(
+          base + '/ffmpeg-core.wasm',
+          'application/wasm'
+        )
+      });
+    } finally {
+      // El Worker ya ha sido creado; se libera la URL temporal.
+      URL.revokeObjectURL(workerBlobURL);
+    }
 
     ffmpeg = instance;
     return instance;
@@ -279,6 +304,15 @@ async function getFFmpeg() {
 
   try {
     return await ffmpegLoading;
+  } catch (error) {
+    ffmpeg = null;
+    setStatus(
+      'No se pudo iniciar el motor de vídeo: ' +
+      (error && error.message ? error.message : String(error)) +
+      '. Comprueba la conexión y vuelve a pulsar Detectar momentos.',
+      0
+    );
+    throw error;
   } finally {
     ffmpegLoading = null;
   }
