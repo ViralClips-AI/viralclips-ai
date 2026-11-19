@@ -446,8 +446,8 @@ async function generarSubtitulos() {
       trabajadorSubtitulos.postMessage(muestras);
     });
 
-    const fragmentos = resultado.chunks || [];
-
+console.log("Resultado Whisper:", resultado);
+const fragmentos = resultado.chunks || [];
     if (!fragmentos.length) {
       throw new Error("No se pudieron obtener los tiempos de los subtítulos.");
     }
