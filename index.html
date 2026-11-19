@@ -54,7 +54,7 @@ footer { text-align: center; color: #777; padding: 30px; }
   <option value="45">45 segundos</option>
   <option value="60">60 segundos</option>
 </select>
-<button onclick="detectarMomentos()">DETECTAR MOMENTOS AUTOMÁTICAMENTE</button>
+<button onclick="detectarTresMomentos()">DETECTAR MOMENTOS AUTOMÁTICAMENTE</button>
 <div id="resultadosMomentos"></div>
 <p id="fragmento"></p>
 </div>
@@ -255,6 +255,95 @@ document.getElementById("final").value = Math.min(duracionTotal, Math.floor(mejo
     estado.textContent = "No se pudo analizar el audio: " + error.message;
   }
 }
+function seleccionarMomento(inicio, final) {
+  document.getElementById("inicio").value = inicio;
+  document.getElementById("final").value = final;
+  estado.textContent = "Momento seleccionado. Pulsa VER FRAGMENTO.";
+}
+
+async function detectarTresMomentos() {
+  if (!preview.src || !duracionTotal) {
+    estado.textContent = "Primero sube un vídeo.";
+    return;
+  }
+
+  const contenedor = document.getElementById("resultadosMomentos");
+  contenedor.innerHTML = "";
+  estado.textContent = "Analizando el volumen del vídeo...";
+
+  let contexto;
+
+  try {
+    contexto = new AudioContext();
+    const respuesta = await fetch(preview.src);
+    const datos = await respuesta.arrayBuffer();
+    const audio = await contexto.decodeAudioData(datos);
+
+    const canal = audio.getChannelData(0);
+    const frecuencia = audio.sampleRate;
+    const bloques = [];
+    const tamaño = Math.floor(frecuencia * 2);
+
+    for (let i = 0; i < canal.length; i += tamaño) {
+      let suma = 0;
+      const limite = Math.min(i + tamaño, canal.length);
+
+      for (let j = i; j < limite; j++) {
+        suma += canal[j] * canal[j];
+      }
+
+      bloques.push({
+        segundo: i / frecuencia,
+        volumen: Math.sqrt(suma / (limite - i))
+      });
+    }
+
+    const maximo = Math.max(...bloques.map(b => b.volumen));
+
+    if (!Number.isFinite(maximo) || maximo === 0) {
+      estado.textContent = "No se ha detectado audio.";
+      return;
+    }
+
+    const duracionClip = Number(document.getElementById("duracionClip").value);
+    const maxInicio = Math.max(0, duracionTotal - duracionClip);
+    const candidatos = [...bloques].sort((a, b) => b.volumen - a.volumen);
+    const seleccionados = [];
+
+    for (const bloque of candidatos) {
+      const centro = bloque.segundo + 1;
+      const inicio = Math.max(0, Math.min(maxInicio, Math.floor(centro - duracionClip / 2)));
+      const final = Math.min(duracionTotal, inicio + duracionClip);
+
+      const repetido = seleccionados.some(m =>
+        Math.abs(m.inicio - inicio) < duracionClip
+      );
+
+      if (!repetido) seleccionados.push({ inicio, final });
+      if (seleccionados.length === 3) break;
+    }
+
+    seleccionados.forEach((momento, indice) => {
+      const boton = document.createElement("button");
+      boton.textContent = "SELECCIONAR MOMENTO " + (indice + 1) +
+        " (" + Math.floor(momento.inicio) + "s - " +
+        Math.floor(momento.final) + "s)";
+
+      boton.onclick = () => seleccionarMomento(momento.inicio, momento.final);
+      contenedor.appendChild(boton);
+    });
+
+    estado.textContent = "Se han encontrado " + seleccionados.length +
+      " momentos según el volumen del audio.";
+
+  } catch (error) {
+    estado.textContent = "No se pudo analizar el audio: " + error.message;
+  } finally {
+    if (contexto && contexto.state !== "closed") {
+      await contexto.close();
+    }
+  }
+}  
 </script>
 </body>
 </html>
