@@ -1,516 +1,930 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ViralClips AI</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#edf5f3">
+<title>Clips.yt — Crea clips virales</title>
 <style>
-* { box-sizing: border-box; }
-body { margin: 0; font-family: Arial, sans-serif; background: #0b0b14; color: white; }
-header { padding: 22px 8%; border-bottom: 1px solid #29293b; font-size: 24px; font-weight: bold; }
-header span, h1 span { color: #a78bfa; }
-main { max-width: 760px; margin: 45px auto; padding: 20px; }
-h1 { text-align: center; font-size: 36px; }
-.intro { text-align: center; color: #aaaabd; }
-.panel { background: #171725; border: 1px solid #343449; border-radius: 18px; padding: 24px; margin-top: 25px; }
-input[type=file] { width: 100%; padding: 14px; background: #242438; color: white; border-radius: 10px; margin-top: 12px; }
-video { width: 100%; margin-top: 20px; border-radius: 12px; background: black; display: none; }
-.info, .selection { background: #242438; padding: 15px; border-radius: 10px; margin-top: 15px; }
-.selection { display: none; }
-label { display: block; margin-top: 18px; }
-input[type=number] { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #44445c; background: #171725; color: white; }
-button { width: 100%; margin-top: 18px; padding: 15px; border: 0; border-radius: 10px; background: #7c3aed; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
-button.secondary { background: #343449; }
-p { color: #aaaabd; line-height: 1.5; }
-#estado { color: #c4b5fd; }
-footer { text-align: center; color: #777; padding: 30px; }
+:root{--green:#087c3d;--green2:#24a85d;--ink:#10191d;--muted:#45535f;--glass:rgba(255,255,255,.63);--line:rgba(255,255,255,.88)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:radial-gradient(ellipse at 37% 4%,rgba(111,202,151,.32),transparent 25%),radial-gradient(ellipse at 97% 38%,rgba(93,190,177,.27),transparent 25%),radial-gradient(ellipse at 3% 100%,rgba(48,164,103,.45),transparent 23%),linear-gradient(120deg,#e9f2f7,#f8fbfa 48%,#e4f1f1);min-height:100vh;overflow-x:hidden}body:before,body:after{content:"";position:fixed;pointer-events:none;z-index:-1;border-radius:48% 52% 62% 38%;filter:blur(1px);transform:rotate(-25deg)}body:before{width:430px;height:210px;top:-105px;left:22%;background:linear-gradient(130deg,rgba(120,207,155,.3),rgba(255,255,255,.05));box-shadow:inset 0 0 0 1px rgba(255,255,255,.55)}body:after{width:370px;height:520px;left:-220px;bottom:-130px;background:linear-gradient(135deg,rgba(13,125,62,.55),rgba(160,226,191,.4));box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}button,input,select{font:inherit}button{cursor:pointer}.topbar{height:126px;display:flex;align-items:center;justify-content:space-between;padding:22px 3.4%;position:relative;z-index:3}.brand{display:flex;align-items:center;gap:14px;font-size:48px;font-weight:850;letter-spacing:-2.5px;color:#080e12}.brand em{font-style:normal;color:#078442}.brandmark{width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#75d895,#07873e);display:grid;place-items:center;color:white;box-shadow:0 9px 20px #198d4b35}.brandmark svg{width:25px}.top-actions{display:flex;gap:20px;align-items:center}.round{width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.65);border:1px solid white;box-shadow:0 6px 20px #304b5010;display:grid;place-items:center}.round svg{width:27px;height:27px}.avatar{background:linear-gradient(#dce9ed,#a9c1c0);color:white;font-size:27px}.layout{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:calc(100vh - 126px)}aside{padding:28px 8px 30px 16px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.55);border-left:0;border-radius:0 34px 34px 0;backdrop-filter:blur(22px);min-height:calc(100vh - 126px)}.nav{display:flex;flex-direction:column;gap:10px;position:sticky;top:20px}.nav button{border:0;background:transparent;text-align:left;display:flex;align-items:center;gap:23px;padding:19px 25px;border-radius:28px;font-size:23px;font-weight:650;color:#080f13;transition:.2s}.nav button svg{width:32px;height:32px;flex:none}.nav button.active{background:linear-gradient(100deg,rgba(185,232,210,.78),rgba(137,215,164,.62));color:#071b12}.nav button:hover{background:rgba(255,255,255,.55)}main{padding:44px 3% 38px;min-width:0}.hero{display:grid;grid-template-columns:minmax(430px,1.1fr) minmax(440px,.9fr);gap:24px;align-items:center;max-width:1500px;margin:0 auto 38px;min-height:455px}.hero-copy{padding:5px 0 0 3.5%}.hero h1{font-size:clamp(43px,4.15vw,68px);line-height:1.08;letter-spacing:-2.9px;margin:0 0 22px;font-weight:850}.hero h1 span{color:#167144}.hero p{font-size:27px;line-height:1.42;color:#3e4c59;max-width:610px;margin:0 0 37px}.primary{border:0;border-radius:40px;padding:19px 48px;background:linear-gradient(110deg,#31a65d,#006b35);color:white;font-size:29px;font-weight:750;box-shadow:0 15px 28px #16844730;display:inline-flex;align-items:center;gap:25px}.primary:hover{filter:brightness(1.05);transform:translateY(-1px)}.hero-art{position:relative;min-height:440px;display:flex;justify-content:center;align-items:center}.phone{width:265px;height:500px;border:8px solid rgba(255,255,255,.88);border-radius:42px;transform:rotate(8deg);overflow:hidden;position:relative;box-shadow:0 25px 55px #174e3d38;background:linear-gradient(180deg,#b77c91,#f5a27a 55%,#252c32)}.phone img{width:100%;height:100%;object-fit:cover}.phone-placeholder{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;color:#fff;background:linear-gradient(160deg,#a47d9a,#ed9b78 48%,#29353b)}.play{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:#ffffffc9;display:grid;place-items:center;color:#13894c}.phone-controls{position:absolute;bottom:0;left:0;right:0;padding:12px;background:linear-gradient(transparent,#111b);color:white;font-size:12px}.phone-controls:before{content:"";display:block;height:5px;border-radius:9px;background:#ffffff70;margin-bottom:10px}.pill{position:absolute;background:rgba(255,255,255,.77);border:1px solid white;backdrop-filter:blur(14px);border-radius:30px;padding:13px 20px;box-shadow:0 10px 25px #2e60521c;display:flex;align-items:center;gap:13px;font-size:18px;font-weight:650;white-space:nowrap}.pill b{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#d9f2e3;color:#087b3c}.pill svg{width:25px;height:25px}.p1{right:-1%;top:22%}.p2{right:-1%;top:43%}.p3{right:-1%;top:64%}.p4{left:-2%;bottom:13%;z-index:2}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1500px;margin:0 auto}.feature{min-height:235px;padding:25px 28px 22px;border:2px solid rgba(255,255,255,.9);border-radius:34px;background:rgba(255,255,255,.55);box-shadow:0 12px 35px #45645b0d,inset 0 1px 8px #fff;backdrop-filter:blur(20px)}.feature-icon{width:72px;height:54px;border-radius:28px;background:linear-gradient(135deg,#c4ead5,#effaf4);display:grid;place-items:center;color:#087b3c;margin-bottom:8px}.feature-icon svg{width:34px;height:34px}.feature h3{font-size:29px;line-height:1.1;margin:8px 0 9px;letter-spacing:-.5px}.feature p{font-size:22px;line-height:1.3;color:#344354;margin:0}.page{display:none;max-width:1200px;margin:0 auto}.page.active{display:block}.page-title{font-size:42px;letter-spacing:-1.3px;margin:4px 0 8px}.page-sub{font-size:18px;color:var(--muted);margin:0 0 25px}.panel{background:rgba(255,255,255,.67);border:1px solid #ffffff;border-radius:28px;padding:24px;box-shadow:0 14px 40px #31554c12;backdrop-filter:blur(18px);margin-bottom:20px}.panel h2{margin:0 0 16px;font-size:23px}.field{display:flex;gap:10px;flex-wrap:wrap}.field input{flex:1;min-width:220px;border:1px solid #d4e2dc;border-radius:14px;padding:14px 16px;background:#ffffffc9;font-size:16px;outline:none}.field input:focus{border-color:#38a66a;box-shadow:0 0 0 3px #38a66a20}.secondary{border:1px solid #b7d9c6;border-radius:14px;background:#e8f7ee;color:#096b36;padding:13px 18px;font-weight:700}.drop{border:2px dashed #9dcdb0;border-radius:22px;padding:32px;text-align:center;background:#f5fbf7;cursor:pointer}.drop strong{display:block;font-size:20px;margin:8px}.drop small{color:#63746b}.drop input{display:none}.video-wrap{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:20px}.video-box{background:#111;border-radius:18px;overflow:hidden;min-height:240px;display:grid;place-items:center;color:#fff}.video-box video{width:100%;max-height:440px;display:block}.video-box iframe{width:100%;height:350px;border:0}.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:15px}.controls label{font-weight:650}.controls input[type=number],.controls select{padding:10px;border:1px solid #d4e2dc;border-radius:10px;background:white}.status{font-size:14px;color:#35634a;min-height:22px;margin-top:12px}.progress{height:8px;border-radius:9px;background:#dce9e1;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:#15934d;transition:width .2s}.word-list{display:flex;flex-wrap:wrap;gap:8px;max-height:270px;overflow:auto}.word{border:1px solid #d6e6dc;background:#fff;border-radius:9px;padding:7px 9px;font-size:15px}.word.active{background:#d8f5e2;border-color:#29a35e}.word input{width:100%;border:0;background:transparent;max-width:95px}.clip-list{display:grid;gap:10px}.clip-row{display:flex;justify-content:space-between;gap:15px;align-items:center;background:#f7fbf8;border:1px solid #dfebe3;padding:13px;border-radius:14px}.muted{color:#65736c;font-size:14px}.danger{color:#a52b2b}.hidden{display:none!important}.settings-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #e2ece6}.small-btn{border:0;background:#e4f5e9;color:#096b36;border-radius:10px;padding:8px 12px;font-weight:700}.sub-preview{background:#12191b;color:white;text-align:center;padding:32px;border-radius:18px;font-size:25px;font-weight:850;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}.sub-preview span {
+  color: #fff;
+}
+
+.sub-preview span.active {
+  color: #54e18a;
+}.footer-note{font-size:12px;color:#66766e;margin-top:20px;line-height:1.5}
+@media(max-width:1100px){.layout{grid-template-columns:245px 1fr}.hero{grid-template-columns:1fr 1fr}.hero p{font-size:22px}.p1,.p2,.p3{right:-3%;font-size:14px}.features{gap:16px}.feature p{font-size:18px}.feature h3{font-size:24px}}
+@media(max-width:760px){.topbar{height:88px;padding:15px 18px}.brand{font-size:32px}.brandmark{width:40px;height:40px}.round{width:45px;height:45px}.layout{display:block}.layout aside{min-height:0;padding:8px;border-radius:0 0 22px 22px;overflow:auto}.nav{position:static;flex-direction:row;gap:4px;min-width:max-content}.nav button{font-size:13px;padding:10px 12px;gap:7px;border-radius:16px}.nav button svg{width:20px;height:20px}main{padding:28px 16px}.hero{display:flex;flex-direction:column;min-height:0;gap:15px}.hero-copy{padding:0}.hero h1{font-size:43px;letter-spacing:-1.8px}.hero p{font-size:19px}.primary{font-size:19px;padding:15px 25px}.hero-art{width:100%;min-height:400px}.phone{width:210px;height:370px}.pill{font-size:12px;padding:8px 10px}.pill b{width:30px;height:30px}.features{grid-template-columns:1fr}.video-wrap{grid-template-columns:1fr}.page-title{font-size:34px}.panel{padding:18px}}
 </style>
-</head>
 <body>
-<header>ViralClips <span>AI</span></header>
+<header class="topbar"><div class="brand"><span class="brandmark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8c0-1.1 1.2-1.8 2.2-1.2l11 6.4a2.3 2.3 0 0 1 0 4L9.2 20.4C8.2 21 7 20.3 7 19.2z"/></svg></span>Clips.<em>yt</em></div><div class="top-actions"><button class="round" aria-label="Notificaciones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button><button class="round avatar" aria-label="Perfil">●</button></div></header>
+<div class="layout"><aside><nav class="nav" aria-label="Navegación">
+<button class="active" data-page="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>Inicio</button>
+<button data-page="crear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="m8 8 8 8M16 8l-8 8M18 3l-5 5M6 21l5-5"/></svg>Crear vídeos</button>
+<button data-page="subtitulos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h4m-2-2v6m4-4h4m-4 4h4"/></svg>Subtítulos</button>
+<button data-page="clips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Mis clips</button>
+<button data-page="ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.9l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.9z" transform="translate(-1 -1)"/></svg>Ajustes</button>
+</nav></aside>
 <main>
-<h1>Crea tus <span>clips virales</span></h1>
-<p class="intro">Selecciona los mejores fragmentos de tus vídeos.</p>
-<section class="panel">
-<strong>1. Selecciona tu vídeo</strong>
-<input id="videoFile" type="file" accept="video/*">
-<video id="preview" controls></video>
-<div class="info" id="info" hidden>
-<p id="nombre"></p><p id="duracion"></p><p id="resolucion"></p>
-</div>
-<div class="selection" id="selection">
-<h3>2. Selecciona tu fragmento</h3>
-<label for="inicio">Segundo de inicio</label>
-<input id="inicio" type="number" min="0" value="0" step="0.1">
-<label for="final">Segundo de finalización</label>
-<input id="final" type="number" min="0" value="10" step="0.1">
-<button onclick="previsualizar()">VER FRAGMENTO</button>
-<button class="secondary" onclick="volver()">VOLVER AL INICIO</button>
-<button onclick="exportarMP4()">EXPORTAR CLIP MP4</button>
-<label for="duracionClip">Duración del clip</label>
-<select id="duracionClip">
-  <option value="15">15 segundos</option>
-  <option value="30" selected>30 segundos (recomendado)</option>
-  <option value="45">45 segundos</option>
-  <option value="60">60 segundos</option>
-</select>
-<button onclick="detectarTresMomentos()">DETECTAR MOMENTOS AUTOMÁTICAMENTE</button>
-<div id="resultadosMomentos"></div>
-<button onclick="generarSubtitulos()">GENERAR SUBTÍTULOS AUTOMÁTICOS</button>
-<div id="resultadoSubtitulos"></div>
-<p id="fragmento"></p>
-</div>
-<p id="estado">Esperando tu vídeo...</p>
-</section>
-</main>
-<footer>ViralClips AI · Tu herramienta de clips</footer>
-<script>
-const selector = document.getElementById("videoFile");
-const preview = document.getElementById("preview");
-const info = document.getElementById("info");
-const selection = document.getElementById("selection");
-const estado = document.getElementById("estado");
+<section class="page active" id="page-inicio"><div class="hero"><div class="hero-copy"><h1>Convierte tus vídeos<br><span>en clips virales</span></h1><p>Edita, añade subtítulos automáticos y exporta en formato vertical, fácil y gratis.</p><button class="primary" data-go="crear">Crear un vídeo <span>⟶</span></button></div><div class="hero-art"><div class="phone"><div class="phone-placeholder">Tu próximo clip<br>viral empieza aquí</div><div class="play">▶</div><div class="phone-controls">━━━━━━●　0:00 / 0:30</div></div><div class="pill p1"><b>✂</b>Recorta momentos</div><div class="pill p2"><b>CC</b>Añade subtítulos</div><div class="pill p3"><b>⇧</b>Exporta en MP4</div><div class="pill p4"><b>CC</b>Subtítulos automáticos</div></div></div><div class="features"><article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m13 2-9 12h7l-1 8 10-13h-7z"/></svg></div><h3>Detecta momentos</h3><p>Encuentra automáticamente las partes más interesantes de tu vídeo.</p></article><article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M6 10h5m-5 4h5m3-4h4m-4 4h4"/></svg></div><h3>Subtítulos precisos</h3><p>Transcripción con buena sincronización y resaltado de palabras.</p></article><article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 5h4m-3 14h2"/></svg></div><h3>Formato listo</h3><p>Exporta en vertical (9:16) para TikTok, Shorts e Instagram Reels.</p></article></div></section>
+<section class="page" id="page-crear"><h1 class="page-title">Crear un vídeo</h1><p class="page-sub">Sube tu vídeo, elige un momento y prepara tu clip vertical.</p><div class="panel"><h2>1. Añade tu vídeo</h2><label class="drop" for="videoFile"><span style="font-size:34px">＋</span><strong>Arrastra tu vídeo aquí o haz clic para seleccionarlo</strong><small>MP4, MOV, WEBM · El vídeo se procesa en tu navegador</small><input id="videoFile" type="file" accept="video/*"></label><div class="field" style="margin-top:15px"><input id="youtubeUrl" type="url" placeholder="O pega un enlace de YouTube para previsualizar"><button class="secondary" id="loadYoutube">Cargar enlace</button></div><div class="muted" style="margin-top:8px">Nota: los enlaces de YouTube permiten previsualizar; para editar y exportar debes subir el archivo de vídeo original.</div></div><div class="panel"><h2>2. Previsualización y duración de los clips</h2><div class="video-wrap"><div class="video-box" id="videoBox"><span>Tu vídeo aparecerá aquí</span></div><div><div class="field"><label for="clipLength"><strong>¿Cuánto quieres que dure cada clip?</strong></label><select id="clipLength" style="width:100%;padding:12px;margin-top:8px;border-radius:10px"><option value="45">45 segundos</option><option value="60" selected>60 segundos</option><option value="120">120 segundos</option><option value="custom">Personalizada</option></select><input id="customClipLength" type="number" min="1" max="3600" value="60" style="display:none;width:100%;margin-top:8px;padding:12px;border-radius:10px" aria-label="Duración personalizada en segundos"><input id="clipStart" type="hidden" value="0"><input id="clipEnd" type="hidden" value="60"><input id="clipDuration" type="hidden" value="60"></div><div class="muted" style="margin-top:8px">Elige únicamente la duración de los clips. Clips.yt buscará automáticamente los mejores momentos dentro de todo el vídeo.</div><div class="controls"><button class="secondary" id="detectBtn">⚡ Detectar momentos</button><button class="secondary" id="makeSubBtn">CC Crear subtítulos</button></div><div class="status" id="status">Sube un vídeo para empezar.</div><div class="progress"><span id="progressBar"></span></div><div class="controls"><label><input type="checkbox" id="vertical" checked> Formato vertical 9:16</label><label><input type="checkbox" id="burnSubs" checked> Incluir subtítulos</label></div><button class="primary" id="exportBtn" style="font-size:18px;padding:14px 22px;margin-top:12px">Exportar MP4</button></div></div></div><div class="panel"><h2>Momentos detectados</h2><div id="moments" class="clip-list"><span class="muted">Todavía no has analizado ningún vídeo.</span></div></div></section>
+<section class="page" id="page-subtitulos"><h1 class="page-title">Subtítulos</h1><p class="page-sub">Genera y revisa la transcripción. Puedes corregir cada palabra.</p><div class="panel"><div class="controls"><button class="secondary" id="subFromPage">Generar subtítulos automáticos</button><label>Idioma <select id="language"><option value="auto">Detectar automáticamente</option><option value="spa">Español</option><option value="eng">Inglés</option><option value="fra">Francés</option><option value="ara">Árabe</option><option value="por">Portugués</option></select></label></div><p class="muted">La primera vez se descarga el modelo de reconocimiento. Necesitas conexión a internet; el procesamiento se realiza en tu equipo.</p><div class="sub-preview" id="subtitlePreview">Así se verán tus subtítulos <span>en pantalla</span></div><h2 style="margin-top:20px">Palabras detectadas</h2><div id="wordList" class="word-list"><span class="muted">Todavía no hay subtítulos. Sube un vídeo y pulsa “Generar subtítulos automáticos”.</span></div></div></section>
+<section class="page" id="page-clips"><h1 class="page-title">Mis clips</h1><p class="page-sub">Los momentos que has seleccionado en esta sesión.</p><div class="panel"><div id="savedClips" class="clip-list"><span class="muted">Todavía no has creado clips.</span></div></div></section>
+<section class="page" id="page-ajustes"><h1 class="page-title">Ajustes</h1><p class="page-sub">Personaliza el resultado de tus vídeos.</p><div class="panel"><div class="settings-row"><div><strong>Formato de exportación</strong><div class="muted">Vídeos verticales para redes sociales</div></div><strong>9:16</strong></div><div class="settings-row"><div><strong>Estilo de subtítulos</strong><div class="muted">Blancos, borde negro y palabra activa verde</div></div><strong>CapCut</strong></div><div class="settings-row"><div><strong>Procesamiento</strong><div class="muted">En tu navegador, sin suscripción</div></div><strong>Local</strong></div><p class="footer-note">Clips.yt utiliza modelos y librerías de código abierto cargados desde internet. La velocidad depende de tu ordenador. Para evitar problemas de memoria, prueba primero con vídeos cortos (15–60 segundos).</p></div></section>
+</main></div>
+
+<script type="module">
+
+const $ = id => document.getElementById(id);
+
+let video = null;
 let videoURL = null;
-let duracionTotal = 0;
+let sourceFile = null;
+let words = [];
+let moments = [];
+let recognizer = null;
+let ffmpeg = null;
+let ffmpegLoading = null;
+let processing = false;
 
-selector.addEventListener("change", function() {
-  const archivo = this.files[0];
-  if (!archivo) return;
-  if (videoURL) URL.revokeObjectURL(videoURL);
-  videoURL = URL.createObjectURL(archivo);
-  preview.src = videoURL;
-  preview.style.display = "block";
-  info.hidden = false;
-  selection.style.display = "block";
-  document.getElementById("nombre").textContent = "Archivo: " + archivo.name;
-  estado.textContent = "Leyendo vídeo...";
-  preview.onloadedmetadata = function() {
-    duracionTotal = preview.duration;
-    document.getElementById("duracion").textContent = "Duración: " + duracionTotal.toFixed(1) + " segundos";
-    document.getElementById("resolucion").textContent = "Resolución: " + preview.videoWidth + " × " + preview.videoHeight;
-    document.getElementById("inicio").value = 0;
-    document.getElementById("final").value = Math.min(10, Math.floor(duracionTotal));
-    document.getElementById("final").max = duracionTotal;
-    estado.textContent = "¡Vídeo cargado correctamente!";
-  };
-  preview.onerror = function() { estado.textContent = "No se pudo leer este vídeo."; };
-});
-
-function previsualizar() {
-  const inicio = Number(document.getElementById("inicio").value);
-  const final = Number(document.getElementById("final").value);
-  if (!duracionTotal) { estado.textContent = "Primero carga un vídeo."; return; }
-  if (!Number.isFinite(inicio) || !Number.isFinite(final) || inicio < 0 || final > duracionTotal || final <= inicio) {
-    estado.textContent = "Comprueba el inicio y el final del fragmento."; return;
+const setStatus = (message, progress) => {
+  $('status').textContent = message;
+  if (progress !== undefined) {
+    $('progressBar').style.width =
+      Math.max(0, Math.min(100, progress)) + '%';
   }
-  preview.currentTime = inicio;
-  preview.play();
-  document.getElementById("fragmento").textContent = "Fragmento seleccionado: " + inicio + " s hasta " + final + " s (" + (final-inicio).toFixed(1) + " segundos).";
-  estado.textContent = "Reproduciendo la vista previa. Se detendrá en el segundo " + final + ".";
-  preview.ontimeupdate = function() {
-    if (preview.currentTime >= final) {
-      preview.pause();
-      preview.ontimeupdate = null;
-      estado.textContent = "Vista previa terminada.";
-    }
-  };
-}
+};
 
-function volver() {
-  preview.pause();
-  preview.currentTime = 0;
-  preview.ontimeupdate = null;
-  estado.textContent = "Vídeo preparado.";
-}
-
-async function exportarMP4() {
-  const inicio = Number(document.getElementById("inicio").value);
-  const final = Number(document.getElementById("final").value);
-
-  if (!duracionTotal || final <= inicio || inicio < 0 || final > duracionTotal) {
-    estado.textContent = "Comprueba los segundos del fragmento.";
-    return;
-  }
-
-  if (!preview.captureStream || !window.MediaRecorder) {
-    estado.textContent = "Tu navegador no admite esta exportación.";
-    return;
-  }
-
-  const tipo = "video/mp4;codecs=avc1.42E01E,mp4a.40.2";
-
-  if (!MediaRecorder.isTypeSupported(tipo)) {
-    estado.textContent = "Chrome no admite grabar MP4 con este códec.";
-    return;
-  }
-
-  try {
-    estado.textContent = "Preparando exportación MP4...";
-
-    preview.pause();
-    preview.currentTime = inicio;
-
-    await new Promise(resolve => {
-      preview.addEventListener("seeked", resolve, { once: true });
-    });
-
-    const stream = preview.captureStream();
-    const partes = [];
-    const grabador = new MediaRecorder(stream, { mimeType: tipo });
-
-    grabador.ondataavailable = evento => {
-      if (evento.data.size > 0) partes.push(evento.data);
-    };
-
-    grabador.onstop = () => {
-      const archivo = new Blob(partes, { type: "video/mp4" });
-      const url = URL.createObjectURL(archivo);
-      const enlace = document.createElement("a");
-
-      enlace.href = url;
-      enlace.download = "ViralClips-clip.mp4";
-      enlace.click();
-
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
-      stream.getTracks().forEach(pista => pista.stop());
-      estado.textContent = "¡Exportación terminada!";
-    };
-
-    preview.ontimeupdate = () => {
-      if (preview.currentTime >= final) {
-        preview.pause();
-        preview.ontimeupdate = null;
-        grabador.stop();
-      }
-    };
-
-    grabador.start();
-    await preview.play();
-
-    estado.textContent = "Exportando tu clip MP4...";
-  } catch (error) {
-    estado.textContent = "Error al exportar: " + error.message;
-  }
-}
-async function detectarMomentos() {
-  if (!preview.src || !duracionTotal) {
-    estado.textContent = "Primero sube un vídeo.";
-    return;
-  }
-
-  estado.textContent = "Analizando el volumen del vídeo...";
-
-  try {
-    const contexto = new AudioContext();
-    const respuesta = await fetch(preview.src);
-    const datos = await respuesta.arrayBuffer();
-    const audio = await contexto.decodeAudioData(datos);
-
-    const canal = audio.getChannelData(0);
-    const frecuencia = audio.sampleRate;
-    const bloques = [];
-    const tamaño = Math.floor(frecuencia * 2);
-
-    for (let i = 0; i < canal.length; i += tamaño) {
-      let suma = 0;
-      const limite = Math.min(i + tamaño, canal.length);
-
-      for (let j = i; j < limite; j++) {
-        suma += canal[j] * canal[j];
-      }
-
-      bloques.push({
-        segundo: i / frecuencia,
-        volumen: Math.sqrt(suma / (limite - i))
-      });
-    }
-
-    const maximo = Math.max(...bloques.map(b => b.volumen));
-
-    if (maximo === 0) {
-      estado.textContent = "No se ha detectado audio.";
-      await contexto.close();
-      return;
-    }
-
-    const mejores = bloques
-      .filter(b => b.volumen > maximo * 0.65)
-      .sort((a, b) => b.volumen - a.volumen)
-      .slice(0, 5)
-      .sort((a, b) => a.segundo - b.segundo);
-
-    if (mejores.length === 0) {
-      estado.textContent = "No se encontraron momentos destacados.";
-      await contexto.close();
-      return;
-    }
-
-document.getElementById("inicio").value = Math.max(0, Math.floor(mejores[0].segundo));
-const duracionClip = Number(document.getElementById("duracionClip").value);
-document.getElementById("final").value = Math.min(duracionTotal, Math.floor(mejores[0].segundo) + duracionClip);
-
-    estado.textContent = "¡Momento destacado encontrado! Revisa el fragmento.";
-
-    await contexto.close();
-
-  } catch (error) {
-    estado.textContent = "No se pudo analizar el audio: " + error.message;
-  }
-}
-function seleccionarMomento(inicio, final) {
-  document.getElementById("inicio").value = inicio;
-  document.getElementById("final").value = final;
-  estado.textContent = "Momento seleccionado. Pulsa VER FRAGMENTO.";
-}
-
-async function detectarTresMomentos() {
-  if (!preview.src || !duracionTotal) {
-    estado.textContent = "Primero sube un vídeo.";
-    return;
-  }
-
-  const contenedor = document.getElementById("resultadosMomentos");
-  contenedor.innerHTML = "";
-  estado.textContent = "Analizando el volumen del vídeo...";
-
-  let contexto;
-
-  try {
-    contexto = new AudioContext();
-    const respuesta = await fetch(preview.src);
-    const datos = await respuesta.arrayBuffer();
-    const audio = await contexto.decodeAudioData(datos);
-
-    const canal = audio.getChannelData(0);
-    const frecuencia = audio.sampleRate;
-    const bloques = [];
-    const tamaño = Math.floor(frecuencia * 2);
-
-    for (let i = 0; i < canal.length; i += tamaño) {
-      let suma = 0;
-      const limite = Math.min(i + tamaño, canal.length);
-
-      for (let j = i; j < limite; j++) {
-        suma += canal[j] * canal[j];
-      }
-
-      bloques.push({
-        segundo: i / frecuencia,
-        volumen: Math.sqrt(suma / (limite - i))
-      });
-    }
-
-    const maximo = Math.max(...bloques.map(b => b.volumen));
-
-    if (!Number.isFinite(maximo) || maximo === 0) {
-      estado.textContent = "No se ha detectado audio.";
-      return;
-    }
-
-    const duracionClip = Number(document.getElementById("duracionClip").value);
-    const maxInicio = Math.max(0, duracionTotal - duracionClip);
-    const candidatos = [...bloques].sort((a, b) => b.volumen - a.volumen);
-    const seleccionados = [];
-
-    for (const bloque of candidatos) {
-      const centro = bloque.segundo + 1;
-      const inicio = Math.max(0, Math.min(maxInicio, Math.floor(centro - duracionClip / 2)));
-      const final = Math.min(duracionTotal, inicio + duracionClip);
-
-      const repetido = seleccionados.some(m =>
-        Math.abs(m.inicio - inicio) < duracionClip
-      );
-
-      if (!repetido) seleccionados.push({ inicio, final });
-      if (seleccionados.length === 3) break;
-    }
-
-    seleccionados.forEach((momento, indice) => {
-      const boton = document.createElement("button");
-      boton.textContent = "SELECCIONAR MOMENTO " + (indice + 1) +
-        " (" + Math.floor(momento.inicio) + "s - " +
-        Math.floor(momento.final) + "s)";
-
-      boton.onclick = () => seleccionarMomento(momento.inicio, momento.final);
-      contenedor.appendChild(boton);
-    });
-
-    estado.textContent = "Se han encontrado " + seleccionados.length +
-      " momentos según el volumen del audio.";
-
-  } catch (error) {
-    estado.textContent = "No se pudo analizar el audio: " + error.message;
-  } finally {
-    if (contexto && contexto.state !== "closed") {
-      await contexto.close();
-    }
-  }
-}  
-let trabajadorSubtitulos = null;
-function crearTrabajadorSubtitulos() {
-  const codigo = `
-    import { pipeline, env } from
-      "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
-
-    env.allowLocalModels = false;
-    env.backends.onnx.wasm.numThreads = 1;
-
-    let modelo = null;
-
-    self.onmessage = async (evento) => {
-      try {
-        if (!modelo) {
-          modelo = await pipeline(
-            "automatic-speech-recognition",
-            "Xenova/whisper-tiny"
-          );
-        }
-
-        const resultado = await modelo(evento.data, {
-          sampling_rate: 16000,
-          return_timestamps: true,
-          chunk_length_s: 30,
-          stride_length_s: 5,
-          task: "transcribe"
-        });
-
-        self.postMessage({ ok: true, resultado });
-      } catch (error) {
-        self.postMessage({
-          ok: false,
-          error: error.message
-        });
-      }
-    };
-  `;
-
-  const blob = new Blob([codigo], {
-    type: "text/javascript"
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.toggle('active', p.id === 'page-' + page);
   });
 
-  return new Worker(
-    URL.createObjectURL(blob),
-    { type: "module" }
-  );
-}
-async function generarSubtitulos() {
-  const archivo = selector.files[0];
+  document.querySelectorAll('.nav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === page);
+  });
 
-  if (!archivo) {
-    estado.textContent = "Primero sube un vídeo.";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.nav button').forEach(button => {
+  button.addEventListener('click', () => go(button.dataset.page));
+});
+
+document.querySelectorAll('[data-go]').forEach(button => {
+  button.addEventListener('click', () => go(button.dataset.go));
+});
+
+/* DURACIÓN ELEGIDA PARA CADA CLIP */
+function getClipLength() {
+  const selected = $('clipLength').value;
+  const value = selected === 'custom'
+    ? Number($('customClipLength').value)
+    : Number(selected);
+  return Number.isFinite(value) ? Math.max(1, Math.min(3600, value || 60)) : 60;
+}
+function updateClipLength() {
+  const custom = $('clipLength').value === 'custom';
+  $('customClipLength').style.display = custom ? 'block' : 'none';
+  $('clipDuration').value = String(getClipLength());
+  if (video && Number.isFinite(video.duration)) {
+    const length = Math.min(getClipLength(), video.duration);
+    const currentStart = Math.max(0, Number($('clipStart').value) || 0);
+    const start = Math.min(currentStart, Math.max(0, video.duration - length));
+    $('clipStart').value = start.toFixed(2);
+    $('clipEnd').value = (start + length).toFixed(2);
+  }
+}
+$('clipLength').addEventListener('change', updateClipLength);
+$('customClipLength').addEventListener('input', updateClipLength);
+
+/* CARGAR VÍDEO */
+
+function loadVideo(file) {
+  if (!file) return;
+
+  if (!file.type.startsWith('video/')) {
+    setStatus('El archivo seleccionado no es un vídeo válido.');
     return;
   }
 
-  let contexto;
+  if (videoURL) URL.revokeObjectURL(videoURL);
+
+  sourceFile = file;
+  videoURL = URL.createObjectURL(file);
+  words = [];
+  moments = [];
+  video = document.createElement('video');
+
+  video.controls = true;
+  video.playsInline = true;
+  video.preload = 'metadata';
+  video.src = videoURL;
+
+  $('videoBox').innerHTML = '';
+  $('videoBox').appendChild(video);
+  video.addEventListener('timeupdate', updatePreview);
+  $('wordList').textContent = 'Todavía no hay subtítulos.';
+  $('moments').textContent = 'Todavía no has analizado ningún vídeo.';
+
+  video.addEventListener('loadedmetadata', () => {
+    $('clipStart').value = '0';
+    const initialLength = Math.min(getClipLength(), video.duration);
+    $('clipEnd').value = initialLength.toFixed(2);
+    $('clipDuration').value = String(getClipLength());
+
+    setStatus(
+      'Vídeo cargado correctamente. Ya puedes crear subtítulos y clips.',
+      0
+    );
+  }, { once: true });
+
+  video.addEventListener('error', () => {
+    setStatus('No se ha podido abrir el vídeo. Prueba con un MP4.');
+  });
+
+  $('videoFile').value = '';
+  go('crear');
+}
+
+$('videoFile').addEventListener('change', event => {
+  loadVideo(event.target.files[0]);
+});
+
+/* ARRASTRAR Y SOLTAR */
+
+const dropZone = document.querySelector('.drop');
+
+dropZone.addEventListener('dragover', event => {
+  event.preventDefault();
+  dropZone.style.background = '#e3f6e9';
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.style.background = '#f5fbf7';
+});
+
+dropZone.addEventListener('drop', event => {
+  event.preventDefault();
+  dropZone.style.background = '#f5fbf7';
+
+  const file = [...event.dataTransfer.files]
+    .find(item => item.type.startsWith('video/'));
+
+  if (file) {
+    loadVideo(file);
+  } else {
+    setStatus('Arrastra un archivo de vídeo válido.');
+  }
+});
+
+/* YOUTUBE: SOLO VISTA PREVIA */
+
+$('loadYoutube').addEventListener('click', () => {
+  const url = $('youtubeUrl').value.trim();
+
+  let id = null;
 
   try {
-    estado.textContent = "Preparando el audio...";
+    const parsed = new URL(url);
 
-    contexto = new AudioContext();
-    const datos = await archivo.arrayBuffer();
-    const audio = await contexto.decodeAudioData(datos);
+    if (parsed.hostname.includes('youtu.be')) {
+      id = parsed.pathname.split('/').filter(Boolean)[0];
+    } else if (
+      parsed.hostname.includes('youtube.com') ||
+      parsed.hostname.includes('youtube-nocookie.com')
+    ) {
+      id =
+        parsed.searchParams.get('v') ||
+        parsed.pathname.match(/\/(?:embed|shorts)\/([^/?]+)/)?.[1];
+    }
+  } catch {
+    id = null;
+  }
 
-    const mono = audio.getChannelData(0);
-    const frecuencia = 16000;
-    const paso = audio.sampleRate / frecuencia;
+  if (!id || !/^[\w-]{11}$/.test(id)) {
+    setStatus('Pega un enlace válido de YouTube.');
+    return;
+  }
 
-    const muestras = new Float32Array(
-      Math.floor(mono.length / paso)
+  $('videoBox').innerHTML = '';
+
+  const frame = document.createElement('iframe');
+  frame.src = 'https://www.youtube-nocookie.com/embed/' + id;
+  frame.allowFullscreen = true;
+  frame.title = 'Vista previa de YouTube';
+
+  $('videoBox').appendChild(frame);
+
+  setStatus(
+    'Vista previa de YouTube cargada. Para editar, generar subtítulos y exportar, sube el archivo original.'
+  );
+});
+
+/* CARGAR FFMPEG */
+
+async function getFFmpeg() {
+  if (ffmpeg && ffmpeg.loaded) return ffmpeg;
+  if (ffmpegLoading) return ffmpegLoading;
+
+  ffmpegLoading = (async () => {
+    setStatus('Preparando el motor de vídeo. La primera carga puede tardar…', 5);
+
+    const { FFmpeg } = await import(
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js'
     );
 
-    for (let i = 0; i < muestras.length; i++) {
-      muestras[i] = mono[Math.floor(i * paso)];
-    }
+    const { toBlobURL } = await import(
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js'
+    );
 
-    estado.textContent = "Preparando el modelo de voz...";
+    const instance = new FFmpeg();
 
-    if (!trabajadorSubtitulos) {
-      trabajadorSubtitulos = crearTrabajadorSubtitulos();
-    }
-
-    estado.textContent = "Generando subtítulos...";
-
-    const resultado = await new Promise((resolve, reject) => {
-      trabajadorSubtitulos.onmessage = (evento) => {
-        if (evento.data.ok) {
-          resolve(evento.data.resultado);
-        } else {
-          reject(new Error(evento.data.error));
-        }
-      };
-
-      trabajadorSubtitulos.onerror = () => {
-        reject(new Error("Error en el trabajador de voz."));
-      };
-
-      trabajadorSubtitulos.postMessage(muestras);
+    instance.on('log', ({ message }) => {
+      if (message) console.log('[FFmpeg]', message);
     });
 
-console.log("Resultado Whisper:", resultado);
-const fragmentos = resultado.chunks || [];
-    if (!fragmentos.length) {
-      throw new Error("No se pudieron obtener los tiempos de los subtítulos.");
-    }
-
-    function tiempoVTT(segundos) {
-      const ms = Math.floor((segundos % 1) * 1000);
-      const total = Math.floor(segundos);
-      const s = total % 60;
-      const m = Math.floor(total / 60) % 60;
-      const h = Math.floor(total / 3600);
-
-      return String(h).padStart(2, "0") + ":" +
-        String(m).padStart(2, "0") + ":" +
-        String(s).padStart(2, "0") + "." +
-        String(ms).padStart(3, "0");
-    }
-
-    let vtt = "WEBVTT\n\n";
-
-    fragmentos.forEach((f, i) => {
-      if (!f.timestamp || f.timestamp[1] === null) return;
-
-      vtt += (i + 1) + "\n";
-      vtt += tiempoVTT(f.timestamp[0]) + " --> " +
-        tiempoVTT(f.timestamp[1]) + "\n";
-      vtt += f.text.trim() + "\n\n";
+    instance.on('progress', ({ progress }) => {
+      if (processing) {
+        setStatus(
+          'Procesando vídeo…',
+          Math.round(10 + progress * 85)
+        );
+      }
     });
 
-    const blob = new Blob([vtt], { type: "text/vtt" });
-    const url = URL.createObjectURL(blob);
+    const base =
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
 
-    preview.querySelectorAll("track[data-auto-subtitles]")
-      .forEach(t => t.remove());
+    // Carga el Worker como Blob para evitar crear un Worker directamente
+    // desde un dominio externo en GitHub Pages.
+    const classWorkerURL = await toBlobURL(
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/worker.js',
+      'text/javascript'
+    );
 
-    const pista = document.createElement("track");
-    pista.kind = "subtitles";
-    pista.label = "Subtítulos automáticos";
-    pista.srclang = "es";
-    pista.default = true;
-    pista.src = url;
-    pista.dataset.autoSubtitles = "true";
-    preview.appendChild(pista);
+    await instance.load({
+      classWorkerURL,
+      coreURL: await toBlobURL(
+        base + '/ffmpeg-core.js',
+        'text/javascript'
+      ),
+      wasmURL: await toBlobURL(
+        base + '/ffmpeg-core.wasm',
+        'application/wasm'
+      )
+    });
 
-    pista.track.mode = "showing";
+    ffmpeg = instance;
+    return instance;
+  })();
 
-    const enlace = document.createElement("a");
-    enlace.href = url;
-    enlace.download = "subtitulos.vtt";
-    enlace.textContent = "DESCARGAR SUBTÍTULOS";
-
-    document.getElementById("resultadoSubtitulos")
-      .replaceChildren(enlace);
-
-    estado.textContent = "¡Subtítulos generados correctamente!";
-
-  } catch (error) {
-    estado.textContent = "Error al generar subtítulos: " + error.message;
+  try {
+    return await ffmpegLoading;
   } finally {
-    if (contexto && contexto.state !== "closed") {
-      await contexto.close();
-    }
+    ffmpegLoading = null;
   }
 }
+
+/* EXTRAER AUDIO REAL DEL VÍDEO */
+
+async function extractAudio() {
+  const ff = await getFFmpeg();
+
+  setStatus('Preparando el audio del vídeo…', 20);
+
+  try {
+    await ff.deleteFile('input-video.mp4');
+  } catch {}
+
+  try {
+    await ff.deleteFile('audio.wav');
+  } catch {}
+
+  await ff.writeFile(
+    'input-video.mp4',
+    new Uint8Array(await sourceFile.arrayBuffer())
+  );
+
+  const result = await ff.exec([
+    '-i', 'input-video.mp4',
+    '-vn',
+    '-ac', '1',
+    '-ar', '16000',
+    '-c:a', 'pcm_s16le',
+    'audio.wav'
+  ]);
+
+  if (result !== 0) {
+    throw new Error('No se ha podido extraer el audio del vídeo.');
+  }
+
+  const wav = await ff.readFile('audio.wav');
+
+  const context = new AudioContext({ sampleRate: 16000 });
+
+  try {
+    const audio = await context.decodeAudioData(wav.buffer.slice(0));
+    return new Float32Array(audio.getChannelData(0));
+  } finally {
+    await context.close();
+  }
+}
+
+/* MODELO DE SUBTÍTULOS */
+
+async function getRecognizer() {
+  if (recognizer) return recognizer;
+
+  setStatus('Cargando el sistema de subtítulos…', 5);
+
+  const { pipeline, env } = await import(
+    'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2'
+  );
+
+  env.allowLocalModels = false;
+  env.useBrowserCache = true;
+
+  recognizer = await pipeline(
+    'automatic-speech-recognition',
+    'Xenova/whisper-tiny',
+    {
+      quantized: true,
+      progress_callback: progress => {
+        if (progress.status === 'progress' && progress.total) {
+          const percent = Math.round(
+            progress.loaded / progress.total * 20
+          );
+          setStatus('Descargando modelo de voz…', percent);
+        }
+      }
+    }
+  );
+
+  return recognizer;
+}
+/* GENERAR SUBTÍTULOS POR FRAGMENTOS */
+
+async function makeSubtitles() {
+  if (processing) return;
+
+  if (!video || !sourceFile) {
+    setStatus('Primero sube un vídeo desde tu ordenador. YouTube solo permite previsualizar.');
+    return;
+  }
+
+  processing = true;
+  $('makeSubBtn').disabled = true;
+  $('subFromPage').disabled = true;
+
+  try {
+    const model = await getRecognizer();
+    const audio = await extractAudio();
+
+    const duration = audio.length / 16000;
+
+    if (!duration || !Number.isFinite(duration)) {
+      throw new Error('No se ha encontrado audio válido.');
+    }
+
+    const lang = $('language').value;
+
+    const languageNames = {
+      spa: 'spanish',
+      eng: 'english',
+      fra: 'french',
+      ara: 'arabic',
+      por: 'portuguese'
+    };
+
+    const chunkSeconds = 25;
+    const overlapSeconds = 1;
+    const chunkSamples = chunkSeconds * 16000;
+    const overlapSamples = overlapSeconds * 16000;
+
+    const collected = [];
+
+    for (
+      let offset = 0;
+      offset < audio.length;
+      offset += chunkSamples - overlapSamples
+    ) {
+      const finish = Math.min(
+        audio.length,
+        offset + chunkSamples
+      );
+
+      const chunk = audio.slice(offset, finish);
+      const offsetSeconds = offset / 16000;
+
+      setStatus(
+        `Reconociendo voz… ${Math.round(finish / audio.length * 100)}%`,
+        35 + finish / audio.length * 55
+      );
+
+      const options = {
+        sampling_rate: 16000,
+        return_timestamps: 'word',
+        chunk_length_s: 20,
+        stride_length_s: 3
+      };
+
+      if (lang !== 'auto') {
+        options.language = languageNames[lang];
+      }
+
+      const result = await model(chunk, options);
+
+      if (result.chunks && result.chunks.length) {
+        for (const part of result.chunks) {
+          const timestamp = part.timestamp || [0, 0];
+
+          const start = Number(timestamp[0] ?? 0);
+          const end = Number(timestamp[1] ?? start);
+
+          if (!part.text || !part.text.trim()) continue;
+
+          const absoluteStart = offsetSeconds + start;
+          const absoluteEnd = offsetSeconds + end;
+
+          // Evita duplicar palabras en los fragmentos solapados.
+          if (
+            offset > 0 &&
+            absoluteStart < offsetSeconds + overlapSeconds
+          ) {
+            continue;
+          }
+
+          collected.push({
+            text: part.text.trim(),
+            start: absoluteStart,
+            end: Math.max(absoluteStart + 0.05, absoluteEnd)
+          });
+        }
+      } else if (result.text && result.text.trim()) {
+        const tokens = result.text.trim().split(/\s+/);
+        const partDuration = chunk.length / 16000;
+
+        tokens.forEach((token, index) => {
+          const start =
+            offsetSeconds + index * partDuration / tokens.length;
+
+          const end =
+            offsetSeconds + (index + 1) * partDuration / tokens.length;
+
+          collected.push({
+            text: token,
+            start,
+            end
+          });
+        });
+      }
+
+      if (finish >= audio.length) break;
+    }
+
+    words = collected
+      .filter(w => w.text && Number.isFinite(w.start))
+      .sort((a, b) => a.start - b.start);
+
+    renderWords();
+
+    if (words.length) {
+      setStatus(
+        `Subtítulos creados: ${words.length} palabras. Puedes corregirlas antes de exportar.`,
+        100
+      );
+      go('subtitulos');
+    } else {
+      setStatus('No se ha detectado voz. Comprueba que el vídeo tenga audio.');
+    }
+
+  } catch (error) {
+    console.error(error);
+
+    setStatus(
+      'Error al crear subtítulos: ' +
+      (error.message || error) +
+      '. Prueba con un vídeo MP4 más corto.'
+    );
+
+  } finally {
+    processing = false;
+    $('makeSubBtn').disabled = false;
+    $('subFromPage').disabled = false;
+  }
+}
+
+$('makeSubBtn').addEventListener('click', makeSubtitles);
+$('subFromPage').addEventListener('click', makeSubtitles);
+
+/* MOSTRAR Y EDITAR PALABRAS */
+
+function renderWords() {
+  const box = $('wordList');
+  box.innerHTML = '';
+
+  if (!words.length) {
+    box.textContent = 'Todavía no hay subtítulos.';
+    return;
+  }
+
+  words.forEach((word, index) => {
+    const element = document.createElement('span');
+    element.className = 'word';
+
+    const input = document.createElement('input');
+    input.value = word.text;
+    input.title =
+      `${word.start.toFixed(2)}s – ${word.end.toFixed(2)}s`;
+
+    input.addEventListener('change', () => {
+      words[index].text = input.value.trim();
+      updatePreview();
+    });
+
+    element.appendChild(input);
+    box.appendChild(element);
+  });
+
+  updatePreview();
+}
+
+
+function updatePreview() {
+  const preview = $('subtitlePreview');
+  preview.innerHTML = '';
+
+  if (!words.length) {
+    preview.textContent = 'Así se verán tus subtítulos';
+    return;
+  }
+
+  const currentTime = video ? video.currentTime : 0;
+
+  const activeIndex = words.findIndex(word =>
+    currentTime >= word.start && currentTime <= word.end
+  );
+
+  const firstIndex = Math.max(
+    0,
+    Math.min(
+      activeIndex === -1 ? 0 : activeIndex - 3,
+      words.length - 7
+    )
+  );
+
+  const visibleWords = words.slice(firstIndex, firstIndex + 7);
+
+  visibleWords.forEach((word, index) => {
+    const span = document.createElement('span');
+    span.textContent = word.text + (index < visibleWords.length - 1 ? ' ' : '');
+
+    const realIndex = firstIndex + index;
+
+    if (realIndex === activeIndex) {
+      span.classList.add('active');
+    }
+
+    preview.appendChild(span);
+  });
+}
+
+
+/* DETECTAR MOMENTOS CON AUDIO */
+
+$('detectBtn').addEventListener('click', async () => {
+  if (processing) return;
+
+  if (!video || !sourceFile) {
+    setStatus('Primero sube un vídeo local.');
+    return;
+  }
+
+  processing = true;
+  $('detectBtn').disabled = true;
+
+  try {
+    const audio = await extractAudio();
+    const rate = 16000;
+    const selectedStart = 0;
+    const selectedEnd = audio.length / rate;
+    const selectedAudio = audio;
+    const windowSize = rate * 1.5;
+    const scores = [];
+
+    setStatus('Analizando el sonido del vídeo…', 70);
+
+    for (let i = 0; i < selectedAudio.length; i += windowSize) {
+      const end = Math.min(selectedAudio.length, i + windowSize);
+
+      let sum = 0;
+      let count = 0;
+
+      for (let j = i; j < end; j += 4) {
+        sum += selectedAudio[j] * selectedAudio[j];
+        count++;
+      }
+
+      scores.push({
+        time: selectedStart + i / rate,
+        score: Math.sqrt(sum / Math.max(1, count))
+      });
+    }
+
+    const selected = [];
+
+    scores
+      .sort((a, b) => b.score - a.score)
+      .forEach(item => {
+        if (
+          selected.length < 3 &&
+          selected.every(
+            previous => Math.abs(previous.time - item.time) > 12
+          )
+        ) {
+          selected.push(item);
+        }
+      });
+
+    const videoDuration = Math.min(selectedEnd, Number(video.duration) || selectedEnd);
+    const wantedLength = Math.min(getClipLength(), videoDuration);
+    moments = selected
+      .sort((a, b) => a.time - b.time)
+      .map((item, index) => {
+        const start = Math.max(0, Math.min(videoDuration - wantedLength, item.time - wantedLength / 2));
+        return { name: 'Clip ' + (index + 1), start, end: start + wantedLength };
+      })
+      .filter((item, index, list) => item.end > item.start && list.findIndex(other => Math.abs(other.start - item.start) < wantedLength * 0.6) === index);
+
+    renderMoments();
+
+    setStatus(
+      'Análisis terminado. Se han buscado momentos en todo el vídeo y se han preparado clips de ' + Math.round(getClipLength()) + ' segundos. La selección usa intensidad del sonido, no comprensión semántica de la escena.',
+      100
+    );
+
+  } catch (error) {
+    console.error(error);
+    setStatus('Error al analizar el vídeo: ' + error.message);
+
+  } finally {
+    processing = false;
+    $('detectBtn').disabled = false;
+  }
+});
+
+/* MOSTRAR MOMENTOS */
+
+function renderMoments() {
+  const box = $('moments');
+  box.innerHTML = '';
+
+  if (!moments.length) {
+    box.textContent = 'No se han encontrado momentos.';
+    return;
+  }
+
+  moments.forEach(moment => {
+    const row = document.createElement('div');
+    row.className = 'clip-row';
+
+    const info = document.createElement('div');
+
+    const title = document.createElement('strong');
+    title.textContent = moment.name;
+
+    const time = document.createElement('div');
+    time.className = 'muted';
+    time.textContent =
+      `${moment.start.toFixed(1)}s – ${moment.end.toFixed(1)}s`;
+
+    info.append(title, time);
+
+    const button = document.createElement('button');
+    button.className = 'small-btn';
+    button.textContent = 'Usar clip';
+
+    button.addEventListener('click', () => {
+      $('clipStart').value = moment.start.toFixed(2);
+      $('clipEnd').value = moment.end.toFixed(2);
+      $('clipDuration').value = String(getClipLength());
+
+      go('crear');
+
+      video.currentTime = moment.start;
+    });
+
+    row.append(info, button);
+    box.appendChild(row);
+  });
+
+  const saved = $('savedClips');
+  saved.innerHTML = '';
+
+  moments.forEach(moment => {
+    const row = document.createElement('div');
+    row.className = 'clip-row';
+
+    const info = document.createElement('div');
+    info.innerHTML =
+      `<strong>${moment.name}</strong><div class="muted">${moment.start.toFixed(1)}s – ${moment.end.toFixed(1)}s</div>`;
+
+    row.appendChild(info);
+    saved.appendChild(row);
+  });
+}
+
+/* FORMATO DE TIEMPO ASS */
+
+function assTime(seconds) {
+  const time = Math.max(0, seconds);
+
+  const hours = Math.floor(time / 3600);
+  const minutes = Math.floor((time % 3600) / 60);
+  const wholeSeconds = Math.floor(time % 60);
+  const centiseconds = Math.floor((time % 1) * 100);
+
+  return (
+    `${String(hours).padStart(1, '0')}:` +
+    `${String(minutes).padStart(2, '0')}:` +
+    `${String(wholeSeconds).padStart(2, '0')}.` +
+    `${String(centiseconds).padStart(2, '0')}`
+  );
+}
+
+/* EXPORTAR MP4 */
+
+async function exportMP4() {
+  if (processing) return;
+
+  if (!video || !sourceFile) {
+    setStatus('Sube primero un vídeo local.');
+    return;
+  }
+
+  const requestedLength = Math.min(getClipLength(), video.duration);
+  const start = Math.max(0, Math.min(
+    Math.max(0, video.duration - requestedLength),
+    Number($('clipStart').value) || 0
+  ));
+  const end = Math.min(video.duration, start + requestedLength);
+
+  if (end <= start) {
+    setStatus('El final debe ser posterior al inicio.');
+    return;
+  }
+
+  if (end - start < 0.2) {
+    setStatus('Selecciona un clip de al menos 0,2 segundos.');
+    return;
+  }
+
+  processing = true;
+  $('exportBtn').disabled = true;
+
+  try {
+    const ff = await getFFmpeg();
+
+    setStatus('Preparando el vídeo para exportar…', 10);
+
+    try {
+      await ff.deleteFile('input-video.mp4');
+    } catch {}
+
+    try {
+      await ff.deleteFile('output.mp4');
+    } catch {}
+
+    try {
+      await ff.deleteFile('subtitles.ass');
+    } catch {}
+
+    await ff.writeFile(
+      'input-video.mp4',
+      new Uint8Array(await sourceFile.arrayBuffer())
+    );
+
+    const duration = end - start;
+    const vertical = $('vertical').checked;
+    const burnSubs = $('burnSubs').checked && words.length > 0;
+
+    let videoFilter = vertical
+      ? 'scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280'
+      : 'scale=1280:-2';
+
+    if (burnSubs) {
+      let ass =
+`[Script Info]
+ScriptType: v4.00+
+PlayResX: 720
+PlayResY: 1280
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,54,&H00FFFFFF,&H0000FF00,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,35,35,120,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+`;
+
+      words.forEach(word => {
+        if (word.end <= start || word.start >= end) return;
+
+        const safeText = word.text
+          .replace(/[{}\\]/g, '')
+          .replace(/\n/g, ' ');
+
+        const subStart = Math.max(0, word.start - start);
+        const subEnd = Math.max(
+          subStart + 0.05,
+          Math.min(duration, word.end - start)
+        );
+
+        ass +=
+          `Dialogue: 0,${assTime(subStart)},${assTime(subEnd)},Default,,0,0,0,,${safeText}\n`;
+      });
+
+      await ff.writeFile(
+        'subtitles.ass',
+        new TextEncoder().encode(ass)
+      );
+
+      videoFilter += ',subtitles=subtitles.ass';
+    }
+
+    /*
+      El recorte se hace antes de la entrada.
+      Así el audio y el vídeo empiezan en el mismo segundo.
+    */
+
+    const args = [
+      '-ss', String(start),
+      '-i', 'input-video.mp4',
+      '-t', String(duration),
+      '-vf', videoFilter,
+      '-map', '0:v:0',
+      '-map', '0:a:0?',
+      '-c:v', 'libx264',
+      '-preset', 'ultrafast',
+      '-crf', '24',
+      '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac',
+      '-b:a', '128k',
+      '-movflags', '+faststart',
+      '-shortest',
+      'output.mp4'
+    ];
+
+    setStatus('Exportando vídeo MP4…', 15);
+
+    const result = await ff.exec(args);
+
+    if (result !== 0) {
+      throw new Error('FFmpeg no ha podido completar la exportación.');
+    }
+
+    const output = await ff.readFile('output.mp4');
+
+    if (!output || !output.length) {
+      throw new Error('El archivo MP4 generado está vacío.');
+    }
+
+    const blob = new Blob(
+      [output.buffer.slice(
+        output.byteOffset,
+        output.byteOffset + output.byteLength
+      )],
+      { type: 'video/mp4' }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = 'clips-yt.mp4';
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+    setStatus('¡MP4 exportado! Se ha iniciado la descarga.', 100);
+
+  } catch (error) {
+    console.error(error);
+
+    setStatus(
+      'No se pudo exportar el MP4: ' +
+      (error.message || error) +
+      '. Prueba con un vídeo más corto.'
+    );
+
+  } finally {
+    processing = false;
+    $('exportBtn').disabled = false;
+  }
+}
+
+$('exportBtn').addEventListener('click', exportMP4);
+
 </script>
-</body>
-</html>
+
+</body></html>
